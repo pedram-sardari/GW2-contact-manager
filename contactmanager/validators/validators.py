@@ -1,7 +1,8 @@
 import re
 import datetime
-import constances as cs
-#from contactmanager.user import User
+import hashlib
+
+from . import constants as cs
 
 
 def validate_email(email):
@@ -49,10 +50,13 @@ def validate_index(lst: list, index: int):
     return False
 
 
-def validate_password(password: str):
-    return password #todo return hash
+def validate_password(password: str, confirm_password: str):
+    sha256 = hashlib.sha256()
+    sha256.update(bytes(password, encoding='utf-8'))
+    return sha256.hexdigest()
 
-def validate_username(username: str, users_list):
+
+def validate_username(username: str):
     return username
 
 
