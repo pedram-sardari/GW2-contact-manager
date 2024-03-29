@@ -1,0 +1,6 @@
+py argparser.py register -h
+py argparser.py register -a -f peyman -l sardari -u pey_s -p 1234a1234a -c 1234a1234a
+py argparser.py login -u pey_s -p 1234a1234a -c 1234a1234a
+py argparser.py logout
+
+
