@@ -14,7 +14,7 @@ class Messages:
     USER_ALREADY_EXISTS_MSG = "Username '{}' already exists."
     INVALID_USERNAME_OR_PASSWORD_MSG = "Invalid username or password. If you haven't registered, please register first."
     INVALID_USER_ID_MSG = "User with id {} not found"
-    LOGIN_TIMEOUT_MSG = "Login Timeout Expired and there's no logged-in user, please login again later."
+    LOGIN_TIMEOUT_MSG = "There's no logged-in user (or Login Timeout Expired), please login again later."
 
     # PickleHandler
     INVALID_MODE_MSG = 'Invalid mode, must be one of these {}'
@@ -26,3 +26,5 @@ class Messages:
     CONTACT_EXIST_ALREADY = 'The same contact already exists'
     INVALID_PHONE_NUMBER_MSG = "Phone number '{}' is not valid"
 
+    # auth_tools
+    NOT_AUTHORIZED_MSG = "You are not authorized to do this operation."
