@@ -174,6 +174,10 @@ class User:
     def view_my_profile_info(self):
         print(self)
 
+    def delete_corresponding_contact_pickle_file(self):
+        if self.contacts_pickle_file_path.exists():
+            self.contacts_pickle_file_path.unlink()
+
     def __str__(self):
         return (f"\nUser ID: {self.user_id}\n"
                 f"Name: {self.name}\n"
@@ -186,3 +190,33 @@ class User:
 
     def __repr__(self):
         return str(self)
+
+
+class AdminUser(User):
+
+    @classmethod
+    def delete_user(cls, *, user_id):
+        cls._load_users_list()
+        for user in cls.users_list:
+            if user.user_id == user_id:
+                cls.users_list.remove(user)
+                cls._save_users_list()
+                user.delete_corresponding_contact_pickle_file()
+                last_logged_in_user = cls.get_last_logged_in_user()
+                if user == last_logged_in_user:
+                    cls._clear_last_login_data()
+                break
+        raise ValueError(cs.Messages.INVALID_USER_ID_MSG.format(user_id))
+
+    @classmethod
+    def delete_all_users(cls):
+        cls._load_users_list()
+        for user in cls.users_list:
+            user.delete_corresponding_contact_pickle_file()
+        cls.users_list.clear()
+        cls._save_users_list()
+        cls._clear_last_login_data()
+
+
+class RegularUser(User):
+    pass
