@@ -1,6 +1,7 @@
 import hashlib
 import os
 import pathlib
+import re
 import time
 import uuid
 
@@ -62,7 +63,8 @@ class User:
 
     @classmethod
     def validate_username(cls, username):
-        cls._load_users_list()
+        if cls.users_pickle_file_path.exists():
+            cls._load_users_list()
         validators.User.validate_username(username)
         if username in [user.username for user in User.users_list]:
             raise ValueError(cs.Messages.USER_ALREADY_EXISTS_MSG.format(username))
@@ -179,20 +181,38 @@ class User:
             self.contacts_pickle_file_path.unlink()
 
     def __str__(self):
-        return (f"\nUser ID: {self.user_id}\n"
-                f"Name: {self.name}\n"
-                f"User Type: {self.user_type}\n"
-                f"Username: {self.username}\n"
-                f"Password: {self._User__password}\n"
-                f"Contacts_pickle_file_path: {self.contacts_pickle_file_path}\n"
-                f"{id(self)}"
-                f"--------------------------------------------------------------------------------")
+        self_str = ""
+        ignore_attributes = ['_User__password', '_contacts_pickle_file_path']
+        for attribute, value in self.__dict__.items():
+            if attribute not in ignore_attributes:
+                self_str += f"\033[92m{attribute.strip('_').replace('_', ' ')}: \033[93m{value}\033[0m\n"
+        return self_str
 
     def __repr__(self):
         return str(self)
 
 
 class AdminUser(User):
+    @classmethod
+    def search_user(cls, user_id="", name="", username="") -> list:
+        cls._load_users_list()
+        matched_users = []
+        pattern = r".*{}.*"
+        for user in cls.users_list:
+            user_id_match_res = name_search_res = username_search_res = True
+
+            if user_id:
+                user_id = validators.validate_uuid(user_id)
+                user_id_match_res = re.match(pattern.format(user_id), user.user_id)
+            else:
+                if name:
+                    name_search_res = re.search(pattern.format(name), user.name)
+                if username:
+                    username_search_res = re.search(pattern.format(username), user.username)
+            if user_id_match_res and name_search_res and username_search_res:
+                matched_users.append(user)
+
+        return matched_users
 
     @classmethod
     def delete_user(cls, *, user_id):
@@ -216,6 +236,25 @@ class AdminUser(User):
         cls.users_list.clear()
         cls._save_users_list()
         cls._clear_last_login_data()
+
+    @staticmethod
+    def view_search_result(search_result_list: list):
+        if isinstance(search_result_list, list):
+            for i, user in enumerate(search_result_list, 1):
+                print(f"\033[94m{'-' * 40}( {i} ){'-' * 40}\033[0m")
+                print(user)
+
+    @staticmethod
+    def view_all_users():
+        AdminUser.view_search_result(AdminUser.search_user())
+
+    @classmethod
+    def register_another_user(cls, new_user):
+        cls.register(new_user)
+
+    @classmethod
+    def edit_another_user_profile_info(cls, name=None, username=None, password=None, confirm_password=None):
+        cls.edit_my_profile_info(name=name, username=username, password=password, confirm_password=confirm_password)
 
 
 class RegularUser(User):

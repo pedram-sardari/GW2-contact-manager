@@ -20,7 +20,7 @@ class Messages:
     INVALID_MODE_MSG = 'Invalid mode, must be one of these {}'
     CANNOT_READ_MSG = 'Cannot read write-modded pickle file'
     CANNOT_WRITE_MSG = 'Cannot write to read-modded pickle file'
-    FILE_NOT_FOUND_MSG = "File '{}' does not exist."
+    FILE_NOT_FOUND_MSG = "Error 700"  # "File '{}' does not exist."
 
     # Contact
     CONTACT_EXIST_ALREADY = 'The same contact already exists'

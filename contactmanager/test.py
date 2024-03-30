@@ -6,7 +6,8 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 # from contactmanager.contact import Contact
 from contactmanager.user import User, AdminUser, RegularUser
-# import auth_tools
+import auth_tools
+import sample_data.fake_record_genarator as frg
 
 
 def user():
@@ -18,26 +19,44 @@ def user():
     # user_info = {"name": "samad", "username": "samad_dj", "password": "1234a1234a", "confirm_password": "1234a1234a"}
 
     def register(**kwargs):
-        # new_user = RegularUser(**kwargs)
-        new_user = AdminUser(**kwargs)
-        User.register(new_user)
+        new_user = None
+        user_type = kwargs.pop('user_type')
+        print(kwargs)
+        if user_type == AdminUser.__name__:
+            new_user = AdminUser(**kwargs)
+        elif user_type == RegularUser.__name__:
+            new_user = RegularUser(**kwargs)
+        if new_user:
+            User.register(new_user)
+        else:
+            raise TypeError("invalid user type")
 
-    # register(**user_info)
+    for user_info in frg.read_fake_csv():
+        try:
+            pass
+            # register(**user_info)
+        except Exception as error:
+            print(error)
+
     User._load_users_list()
-    print(User.users_list)
+    # print(User.users_list)
 
     # -------------------------------------------------------( login )-------------------------------------------------
     # User.login("jack_sparrow", "1234a1234a")
-    User.login("sara_ninja", "1234a1234a")
+    # User.login("sara_ninja", "1234a1234a")
     # User.login("maro_u", "1818")
     # login_data = User.get_last_logged_in_user()
     # print(login_data)
     # User.logout()
     # User.login("maro_u", "4321")
 
+    # ------------------------------------------------------( search )------------------------------------------------
+    # print(AdminUser.search_user(name="Lau", username="ed"))
+    # AdminUser.view_search_result(AdminUser.search_user(name="", username=""))
     # ------------------------------------------------------( view )------------------------------------------------
-    user = User.get_last_logged_in_user()
-    user.view_my_profile_info()
+    # user = User.get_last_logged_in_user()
+    # user.view_my_profile_info()
+    AdminUser.view_all_users()
 
     # -------------------------------------------------------( edit )-------------------------------------------------
     # User.edit_my_profile_info("Jack",) #"Peter_spider",)
@@ -45,13 +64,12 @@ def user():
     # User.edit_logged_in_user(password="1818", confirm_password="1818")
 
     # ------------------------------------------------------( delete )------------------------------------------------
-    # @auth_tools.who_has_access(user_types_list=[AdminUser, RegularUser])
+    @auth_tools.who_has_access(user_types_list=[AdminUser, RegularUser])
     def delete_all_users():
         # AdminUser.delete_all_users()
         AdminUser.delete_user(user_id='a66d3c95-765b-4a2b-8da1-f18ca773badc')
 
-    delete_all_users()
-    # User.remove_user_by_id()
+    # delete_all_users()
 
 
 def contact():

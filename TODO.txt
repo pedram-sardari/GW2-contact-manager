@@ -1,2 +1,5 @@
 1. Add user type.
 2. user_id provider.
+3. log error file not found
+4. Add 'and', 'or', 'not' in search
+5. Add get pass

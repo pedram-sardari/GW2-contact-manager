@@ -63,7 +63,9 @@ def validate_uuid(uuid: str):
 class User:
     @staticmethod
     def validate_password(password: str, confirm_password: str):  # TODO: Implementation
-        if isinstance(password, str) and password.isalnum() and len(password) >= cs.Constants.PASSWORD_MIN_LENGTH:
+        cond1 = isinstance(password, str)
+        cond2 = True if re.match(cs.Patterns.PASSWORD_8_PATTERN, password) else False
+        if cond1 and cond2:
             if password == confirm_password:
                 sha256 = hashlib.sha256()
                 sha256.update(password.encode())
