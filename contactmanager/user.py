@@ -4,6 +4,7 @@ import pathlib
 import re
 import time
 import uuid
+import typing
 
 import constants as cs
 import validators
@@ -142,14 +143,18 @@ class User:
         cls._save_last_login_data()
 
     @classmethod
-    def get_last_logged_in_user(cls):
+    def is_any_logged_in_user(cls):
         now = time.time()
         cls._load_last_login_data()
         user = cls.last_login_data["user"]
         if user is None or (cls.last_login_data["timestamp"] + cs.Constants.LOGIN_DURATION_SEC) < now:
             cls._clear_last_login_data()
             raise TimeoutError(cs.Messages.LOGIN_TIMEOUT_MSG)
-        return user
+
+    @classmethod
+    def get_last_logged_in_user(cls) -> None | typing.Self:
+        cls.is_any_logged_in_user()
+        return cls.last_login_data["user"]
 
     @classmethod
     def find_last_logged_in_user_in_users_list(cls):
@@ -181,8 +186,10 @@ class User:
             cls._save_users_list()
             return cs.Messages.SUCCESSFUL_USER_INFO_UPDATE_MSG
 
-    def view_my_profile_info(self):
-        print(self)
+    @staticmethod
+    def view_my_profile_info():
+        user = User.get_last_logged_in_user()
+        print(user)
 
     def delete_corresponding_contact_pickle_file(self):
         if self.contacts_pickle_file_path.exists():
@@ -204,6 +211,7 @@ class User:
 class AdminUser(User):
     @classmethod
     def search_user(cls, user_id="", name="", username="") -> list:
+        cls.is_any_logged_in_user()
         cls._load_users_list()
         matched_users = []
         pattern = r".*{}.*"
@@ -221,7 +229,9 @@ class AdminUser(User):
             if user_id_match_res and name_search_res and username_search_res:
                 matched_users.append(user)
 
-        return matched_users
+        if matched_users:
+            return matched_users
+        raise ValueError(cs.Messages.NO_SEARCH_RESULT_MSG)
 
     @classmethod
     def delete_user(cls, *, user_id):
@@ -239,6 +249,7 @@ class AdminUser(User):
 
     @classmethod
     def delete_all_users(cls):
+        cls.is_any_logged_in_user()
         cls._load_users_list()
         for user in cls.users_list:
             user.delete_corresponding_contact_pickle_file()

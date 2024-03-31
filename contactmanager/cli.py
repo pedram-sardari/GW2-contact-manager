@@ -44,8 +44,7 @@ def logout(**kwargs):
 
 def view_my_profile_info(**kwargs):
     try:
-        user = User.get_last_logged_in_user()
-        user.view_my_profile_info()
+        User.view_my_profile_info()
     except Exception as error:
         print(cs.Messages.Error_FORMAT_MSG.format(error))
 
@@ -107,4 +106,3 @@ edit_my_info_parser.set_defaults(func=edit_my_profile_info)
 # call func
 args = global_parser.parse_args()
 args.func(**args.__dict__)
-
