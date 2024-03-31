@@ -145,10 +145,11 @@ class User:
     def get_last_logged_in_user(cls):
         now = time.time()
         cls._load_last_login_data()
-        if (cls.last_login_data["timestamp"] + cs.Constants.LOGIN_DURATION_SEC) < now:
+        user = cls.last_login_data["user"]
+        if user is None or (cls.last_login_data["timestamp"] + cs.Constants.LOGIN_DURATION_SEC) < now:
             cls._clear_last_login_data()
             raise TimeoutError(cs.Messages.LOGIN_TIMEOUT_MSG)
-        return cls.last_login_data["user"]
+        return user
 
     @classmethod
     def find_last_logged_in_user_in_users_list(cls):
