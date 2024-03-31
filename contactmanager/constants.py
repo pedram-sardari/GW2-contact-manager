@@ -21,6 +21,7 @@ class Messages:
     SUCCESSFUL_USER_INFO_UPDATE_MSG = "\033[92mUser information updated successfully.\033[0m"
     PASS_AND_CONFIRM_PASS_REQUIRED_MSG = "Both password and confirm_password is required"
     Error_FORMAT_MSG = "\033[31m{}\033[0m"
+    NO_SEARCH_RESULT_MSG = "There are no users with the given info."
 
     # PickleHandler
     INVALID_MODE_MSG = 'Invalid mode, must be one of these {}'
