@@ -33,6 +33,8 @@ def who_can_provide_params(*, authorized_user_types_list, restricted_params_list
                         if isinstance(user, user_type):
                             return func(*args, **kwargs)
                     raise PermissionError(cs.Messages.NOT_AUTHORIZED_MSG)
+            # if param is not in kwargs, run the func
+            return func(*args, **kwargs)
 
         return wrapper
 
