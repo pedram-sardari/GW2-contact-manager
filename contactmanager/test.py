@@ -43,6 +43,8 @@ def user():
 
     # -------------------------------------------------------( login )-------------------------------------------------
     # User.login("jack_sparrow", "1234a1234a")
+    # User.login("paulsmith", "FZP@?%876")
+    # User.login("dhoward", "834!!$Uxs")
     # User.login("sara_ninja", "1234a1234a")
     # User.login("maro_u", "1818")
     # login_data = User.get_last_logged_in_user()
@@ -60,14 +62,15 @@ def user():
 
     # -------------------------------------------------------( edit )-------------------------------------------------
     # User.edit_my_profile_info("Jack",) #"Peter_spider",)
+    # User.edit_my_profile_info(name="Jack",username="ped800") #"Peter_spider",)
     # User.edit_logged_in_user("maro", "maro_u", "4321", "4321")
     # User.edit_logged_in_user(password="1818", confirm_password="1818")
 
     # ------------------------------------------------------( delete )------------------------------------------------
-    @auth_tools.who_has_access(user_types_list=[AdminUser, RegularUser])
+    # @auth_tools.who_has_access(user_types_list=[AdminUser, ])
     def delete_all_users():
-        # AdminUser.delete_all_users()
-        AdminUser.delete_user(user_id='a66d3c95-765b-4a2b-8da1-f18ca773badc')
+        AdminUser.delete_all_users()
+        # AdminUser.delete_user(user_id='a66d3c95-765b-4a2b-8da1-f18ca773badc')
 
     # delete_all_users()
 

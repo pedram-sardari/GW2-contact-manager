@@ -61,7 +61,7 @@ class User:
     def name(self, name: str):
         self._name = validators.validate_name(name)
 
-    @classmethod
+    @classmethod  # TODO: change to staticmethod
     def validate_username(cls, username):
         if cls.users_pickle_file_path.exists():
             cls._load_users_list()
@@ -83,8 +83,9 @@ class User:
 
     @classmethod
     def _load_users_list(cls):
-        with PickleHandler(file_path=str(cls.users_pickle_file_path), mode='r') as f:
-            cls.users_list = f.read()
+        if not cls.users_list:
+            with PickleHandler(file_path=str(cls.users_pickle_file_path), mode='r') as f:
+                cls.users_list = f.read()
 
     @classmethod
     def _save_users_list(cls):
@@ -114,6 +115,7 @@ class User:
             cls._load_users_list()
         cls.users_list.append(new_user)
         cls._save_users_list()
+        return cs.Messages.REGISTER_MSG.format(new_user.name.title())
 
     @classmethod
     def login(cls, username, password):
@@ -123,13 +125,15 @@ class User:
                 cls.last_login_data["user"] = user
                 cls.last_login_data["timestamp"] = time.time()
                 cls._save_last_login_data()
-                return user
+                return cs.Messages.LOGIN_MSG.format(user.name.title())
         cls._clear_last_login_data()
         raise ValueError(cs.Messages.INVALID_USERNAME_OR_PASSWORD_MSG)
 
     @classmethod
     def logout(cls):
+        user = cls.get_last_logged_in_user()
         cls._clear_last_login_data()
+        return cs.Messages.LOGOUT_MSG.format(user.name.title())
 
     @classmethod
     def _clear_last_login_data(cls):
@@ -159,19 +163,22 @@ class User:
     def edit_my_profile_info(cls, name=None, username=None, password=None, confirm_password=None):
         user = cls.find_last_logged_in_user_in_users_list()
         try:
+            if password and confirm_password:
+                user.__password = validators.User.validate_password(password, confirm_password)
+            else:
+                raise ValueError(cs.Messages.PASS_AND_CONFIRM_PASS_REQUIRED_MSG)
             if name:
                 user.name = name  # validation by setter
             if username:
                 user.username = username  # validation by setter
-                cls._clear_last_login_data()
-            if password and confirm_password:
-                user.__password = validators.User.validate_password(password, confirm_password)
-                cls._clear_last_login_data()
         except Exception:
             raise
         else:
+            if username or password:
+                cls._clear_last_login_data()
             cls._save_last_login_data()
             cls._save_users_list()
+            return cs.Messages.SUCCESSFUL_USER_INFO_UPDATE_MSG
 
     def view_my_profile_info(self):
         print(self)
@@ -183,6 +190,7 @@ class User:
     def __str__(self):
         self_str = ""
         ignore_attributes = ['_User__password', '_contacts_pickle_file_path']
+        print()
         for attribute, value in self.__dict__.items():
             if attribute not in ignore_attributes:
                 self_str += f"\033[92m{attribute.strip('_').replace('_', ' ')}: \033[93m{value}\033[0m\n"

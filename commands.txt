@@ -1,6 +1,6 @@
-py argparser.py register -h
-py argparser.py register -a -f peyman -l sardari -u pey_s -p 1234a1234a -c 1234a1234a
-py argparser.py login -u pey_s -p 1234a1234a -c 1234a1234a
-py argparser.py logout
-
+py cli.py register -h
+py cli.py register -a -n peyman -u pey_s -p 1234a1234a@ -c 1234a1234a@
+py cli.py login -u pey_s -p 1234a1234a@ -c 1234a1234a@
+py cli.py logout
+py cli.py view_my_profile_info
 

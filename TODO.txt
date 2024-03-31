@@ -3,3 +3,9 @@
 3. log error file not found
 4. Add 'and', 'or', 'not' in search
 5. Add get pass
+6. Add 'value' in INVALID_MSG in validators package
+7. get previous password for changing pass
+8. colorize search result
+
+
+1. exception handling
