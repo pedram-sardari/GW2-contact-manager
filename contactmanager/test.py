@@ -81,26 +81,25 @@ def contact():
     # con1 = Contact("Arma", 'alibabaei', 'arma@gmail.com', [["addr1", "street2, alley1"]],
     #                [["Home", "09122343132"],["Home", "8821318"]])
     con1 = Contact("pedi", 'babakhodadad', 'pedi@gmail.com', [["addr1", "street1, alley1"]], [["Home", "8821318"]])
-    user = User.get_last_logged_in_user()
-    print("user.__class__.__name__:", user.__class__.__name__)
-    print("user type", AdminUser)
-    print(isinstance(user, AdminUser))
+    # user = User.get_last_logged_in_user()
     # Contact.set_contacts_pickle_file_path(user_id="7f68b2d5-cd6b-418c-b077-d942f889a817")
-    con1.add_contact(con1)
+    # con1.add_contact(con1)
     # ------------------------------------------------------( edit )------------------------------------------------
-    # matched_contacts = Contact.search_contact(contact_id="350416e1-71f2-463e-ab0a-9472524c18e3", first_name="",
-    #                                           last_name="", email="", phone_number="")
-    # print(matched_contacts)
-    # for contact in matched_contacts:
-    #     print("before:", contact, sep="\n")
-    #     contact.edit_contact(first_name="mahmodd", last_name="shafie", email="pedisdi@gmail.com",
-    #                          phones=[["work", "02188493144"], ["mobile", "09123421321"], ["Home", "0000000000"]])
-    #     print("after:", contact, sep="\n")
+    matched_contacts = Contact.search_contact(contact_id="e9227c83-2bea-4f16-92c3-f7b64fc7ee92", first_name="",
+                                              last_name="", email="", phone_number="")
+    print(matched_contacts)
+    for contact in matched_contacts:
+        print("before:", contact, sep="\n")
+        print("test:********", id(contact))
+        contact.edit_contact(first_name="mahmodd", last_name="shafie", email="pedisdi@gmail.com",
+                             phones=[["work", ""], ["mobile", ""], ["Home", ""]])
+        print("after:", contact, sep="\n")
 
     # ------------------------------------------------------( search )------------------------------------------------
-    # matched_contacts = Contact.search_contact(contact_id="b004d5ba-7a5d-4860-b807-f468a5b8d57e", first_name="",
+    # search_result= Contact.search_contact(contact_id="b004d5ba-7a5d-4860-b807-f468a5b8d57e", first_name="",
     #                                           last_name="", email="", phone_number="")
-    # print("matched_contacts:", matched_contacts)
+    # search_result = Contact.search_contact(first_name='', phone_number='13')
+    # print("matched_contacts:", search_result)
 
     # ------------------------------------------------------( delete )------------------------------------------------
     # Contact.delete_contact(first_name="mahmodd", phone_number="")

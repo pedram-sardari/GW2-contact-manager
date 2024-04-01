@@ -27,6 +27,7 @@ def who_can_provide_params(*, authorized_user_types_list, restricted_params_list
             user = User.get_last_logged_in_user()
             # Check is there any restricted params in kwrags
             for param in restricted_params_list:
+                # if param is in kwargs, run the func
                 if kwargs.get(param):
                     # if the current user in restricted_params_list
                     for user_type in authorized_user_types_list:

@@ -25,9 +25,9 @@ class User:
         self.__password = validators.User.validate_password(password, confirm_password)
         contacts_path = os.path.join(cs.Paths.CONTACTS_DIRECTORY_PATH, f"{str(self.user_id)}.pickle")
         self._contacts_pickle_file_path = pathlib.Path(contacts_path)
-        self.__initialize_contacts_pickle_file()
+        self._initialize_contacts_pickle_file()
 
-    def __initialize_contacts_pickle_file(self):
+    def _initialize_contacts_pickle_file(self):
         self.contacts_pickle_file_path.parent.mkdir(parents=True, exist_ok=True)
         with PickleHandler(str(self.contacts_pickle_file_path), 'w') as f:
             f.write(data=list())
@@ -62,10 +62,10 @@ class User:
     def name(self, name: str):
         self._name = validators.validate_name(name)
 
-    @classmethod  # TODO: change to staticmethod
-    def validate_username(cls, username):
-        if cls.users_pickle_file_path.exists():
-            cls._load_users_list()
+    @staticmethod
+    def validate_username(username):
+        if User.users_pickle_file_path.exists():
+            User._load_users_list()
         validators.User.validate_username(username)
         if username in [user.username for user in User.users_list]:
             raise ValueError(cs.Messages.USER_ALREADY_EXISTS_MSG.format(username))
