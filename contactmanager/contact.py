@@ -55,14 +55,22 @@ class Contact:
 
     @phones.setter
     def phones(self, new_phones):
-        for new_name, new_phone in Contact.validate_phones(new_phones):
-            for index, item in enumerate(self.phones):
-                name, phone = item
-                if name == new_name and phone != new_phone:
-                    self.phones[index] = new_phone
+        for new_label__phone in Contact.validate_phones(new_phones):
+            new_label, new_phone = new_label__phone
+            for i, current_label__phone in enumerate(self.phones):
+                current_label, current_phone = current_label__phone
+                if not new_phone:
+                    if new_label == current_label and new_phone == "":
+                        self.phones.pop(i)
+                        break
+                elif new_label == current_label and new_phone != current_phone:
+                    self.phones[i] = new_label__phone
+                    break
+                elif new_label == current_label and new_phone == current_phone:
                     break
             else:
-                self.phones.append([new_name, new_phone])
+                if new_phone:
+                    self.phones.append(new_label__phone)
 
     @property
     def addresses(self):
@@ -70,26 +78,33 @@ class Contact:
 
     @addresses.setter
     def addresses(self, new_addresses):
-        for new_name, new_address in Contact.validate_addresses(new_addresses):
-            for index, item in enumerate(self.addresses):
-                name, address = item
-                if name == new_name and address != new_address:
-                    self.phones[index] = new_address
-                break
-            else:
-                self.phones.append([new_name, new_address])
+        for new_label__address in Contact.validate_addresses(new_addresses):
+            new_label, new_address = new_label__address
+            for i, current_label__address in enumerate(self.addresses):
+                current_label, current_address = current_label__address
+                if not new_address:
+                    if new_label == current_label and new_address == "":
+                        self.addresses.pop(i)
+                        break
+                elif new_label == current_label and new_address != current_address:
+                    self.addresses[i] = new_label__address
+                    break
+                elif new_label == current_label and new_address == current_address:
+                    break
+                else:
+                    if new_address:
+                        self.addresses.append(new_label__address)
 
     @staticmethod
     def validate_addresses(addresses_list: list):
-        for name, address in addresses_list:
+        for label, address in addresses_list:
             validators.Address.validate_address(address)
-            validators.validate_name(name)
+            validators.validate_name(label)
         return addresses_list
 
     @staticmethod
     def validate_phones(phones_list: list):
-        # print(phones_list)
-        for name, phone in phones_list:
+        for label, phone in phones_list:
             try:
                 validators.Phones.validate_cellphone_number(phone)
             except ValueError:
@@ -98,17 +113,15 @@ class Contact:
                 validators.Phones.validate_home_number(phone)
             except ValueError:
                 raise ValueError(cs.Messages.INVALID_PHONE_NUMBER_MSG.format(phone))
-            validators.validate_name(name)
+            validators.validate_name(label)
         return phones_list
 
-    # @auth_tools.who_has_access(authorized_user_types_list=[AdminUser])
     @classmethod
     @auth_tools.who_can_provide_params(authorized_user_types_list=[AdminUser], restricted_params_list=["user_id"])
     def set_contacts_pickle_file_path(cls, *, user_id=None):
         if user_id:
             search_result = AdminUser.search_user(user_id=user_id)
             user = search_result[0]
-            print(user)
         else:
             user = User.get_last_logged_in_user()
         cls.contacts_pickle_file_path = user.contacts_pickle_file_path
@@ -118,7 +131,6 @@ class Contact:
         if cls.contacts_pickle_file_path.name == "null":
             cls.set_contacts_pickle_file_path()
         if cls.contacts_pickle_file_path.exists():
-            print(cls.contacts_pickle_file_path)
             with PickleHandler(str(cls.contacts_pickle_file_path), 'r') as f:
                 cls.contacts_list = f.read()
 
@@ -141,7 +153,7 @@ class Contact:
     def check_contact_existence(new_contact):
         for contact in Contact.contacts_list:
             if contact == new_contact:
-                raise ValueError(cs.Messages.CONTACT_EXIST_ALREADY)
+                raise ValueError(cs.Messages.CONTACT_ALREADY_EXIST_MSG)
 
     def __eq__(self, other):
         cond1 = self.first_name == other.first_name
@@ -154,31 +166,35 @@ class Contact:
         return False
 
     @staticmethod
-    def search_contact(contact_id=None, first_name=None, last_name=None, email=None, phone_number=None) -> list:
+    def search_contact(contact_id="", first_name="", last_name="", email="", phone_number="") -> list:
         Contact.__load_contacts_list()
         matched_contacts = []
         pattern = r".*{}.*"
         for contact in Contact.contacts_list:
             cond1 = cond2 = cond3 = cond4 = cond5 = True
             if contact_id:
+                contact_id = validators.validate_uuid(contact_id)
                 cond1 = True if re.search(pattern.format(contact_id), str(contact.contact_id)) else False
-            if first_name:
-                cond2 = True if re.search(pattern.format(first_name), contact.first_name) else False
-            if last_name:
-                cond3 = True if re.search(pattern.format(last_name), contact.last_name) else False
-            if email:
-                cond4 = True if re.search(pattern.format(email), contact.email) else False
-            if phone_number:
-                for name, contact_phone_number in contact.phones:
-                    if re.search(pattern.format(phone_number), contact_phone_number):
-                        break
-                else:
-                    cond5 = False
+            else:
+                if first_name:
+                    cond2 = True if re.search(pattern.format(first_name), contact.first_name) else False
+                if last_name:
+                    cond3 = True if re.search(pattern.format(last_name), contact.last_name) else False
+                if email:
+                    cond4 = True if re.search(pattern.format(email), contact.email) else False
+                if phone_number:
+                    for label, contact_phone_number in contact.phones:
+                        if re.search(pattern.format(phone_number), contact_phone_number):
+                            break
+                    else:
+                        cond5 = False
 
             if cond1 and cond2 and cond3 and cond4 and cond5:
                 matched_contacts.append(contact)
 
-        return matched_contacts
+        if matched_contacts:
+            return matched_contacts
+        raise ValueError(cs.Messages.NO_SEARCH_RESULT_MSG)
 
     def edit_contact(self, first_name=None, last_name=None, email=None, phones=None, addresses=None):
         try:
@@ -197,12 +213,17 @@ class Contact:
         else:
             Contact.__save_contacts_list()
 
-    @classmethod
-    def view_all_contacts(cls):
-        cls.__load_contacts_list()
-        for index, contact in enumerate(cls.contacts_list, 1):
-            print(f"\033[93m{'-' * 40}( {index} ){'-' * 40}\033[0m")
-            print(contact)
+    @staticmethod
+    def view_search_result(search_result_list):
+        if isinstance(search_result_list, list):
+            for index, contact in enumerate(search_result_list, 1):
+                print(f"\033[93m{'-' * 40}( {index} ){'-' * 40}\033[0m")
+                print(contact)
+                print("view_search_result********id:", id(contact))
+
+    @staticmethod
+    def view_all_contacts():
+        Contact.view_search_result(Contact.search_contact())
 
     @classmethod
     def delete_contact(cls, contact_id=None, first_name=None, last_name=None, email=None, phone_number=None):
@@ -222,7 +243,6 @@ class Contact:
         string = ""
         for key, value in self.__dict__.items():
             if isinstance(value, list):
-                # print(f"{key}: {value}")
                 for name, item in value:
                     string += f"\033[94m{name}: \033[95m{item}\033[0m\n"
             else:
