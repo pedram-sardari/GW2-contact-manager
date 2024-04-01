@@ -1,7 +1,5 @@
-import constants as cs
-from contactmanager.user import AdminUser, RegularUser, User
-from contactmanager.contact import Contact
 import auth_tools
+from contactmanager.user import AdminUser, RegularUser, User
 
 
 def _create_new_user(**kwargs):
@@ -42,7 +40,7 @@ def logout(**kwargs):
     print(msg)
 
 
-def view_my_profile_info(**kwargs):
+def view_my_info(**kwargs):
     user = User.get_last_logged_in_user()
     user.view_my_profile_info()
 
@@ -58,11 +56,11 @@ def edit_user(**kwargs):
 
 
 def _edit_my_info(**kwargs):
-    user = User.find_last_logged_in_user_in_users_list()
+    user = User.get_last_logged_in_user()
     return user.edit_my_profile_info(**kwargs)
 
 
-# @auth_tools.who_has_access(authorized_user_types_list=[AdminUser])
+@auth_tools.who_has_access(authorized_user_types_list=[AdminUser])
 def _edit_another_user_info(**kwargs):
     return AdminUser.edit_another_user_profile_info(**kwargs)
 

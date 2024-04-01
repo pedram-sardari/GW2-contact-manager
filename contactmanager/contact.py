@@ -1,17 +1,13 @@
-import pathlib
 import re
 import uuid
 
-import auth_tools
 import constants as cs
 import validators
-from contactmanager.pickle_handler import PickleHandler
 from contactmanager.user import User, AdminUser
 
 
 class Contact:
     contacts_list = []
-    contacts_pickle_file_path = pathlib.Path('null')
 
     def __init__(self, first_name, last_name, email, addresses: list, phone_numbers: list):
         self._contact_id = uuid.uuid4()
@@ -117,37 +113,20 @@ class Contact:
         return phones_list
 
     @classmethod
-    @auth_tools.who_can_provide_params(authorized_user_types_list=[AdminUser], restricted_params_list=["user_id"])
-    def set_contacts_pickle_file_path(cls, *, user_id=None):
+    def set_contacts_list(cls, *, user_id=None):
         if user_id:
             search_result = AdminUser.search_user(user_id=user_id)
             user = search_result[0]
         else:
             user = User.get_last_logged_in_user()
-        cls.contacts_pickle_file_path = user.contacts_pickle_file_path
+        cls.contacts_list = user.contacts_list
 
-    @classmethod
-    def __load_contacts_list(cls):
-        if cls.contacts_pickle_file_path.name == "null":
-            cls.set_contacts_pickle_file_path()
-        if cls.contacts_pickle_file_path.exists():
-            with PickleHandler(str(cls.contacts_pickle_file_path), 'r') as f:
-                cls.contacts_list = f.read()
-
-    @classmethod
-    def __save_contacts_list(cls):
-        if cls.contacts_pickle_file_path.name == "null":
-            cls.set_contacts_pickle_file_path()
-        with PickleHandler(str(cls.contacts_pickle_file_path), 'w') as f:
-            f.write(cls.contacts_list)
 
     @classmethod
     def add_contact(cls, new_contact):
         if isinstance(new_contact, cls):
-            cls.__load_contacts_list()
             cls.check_contact_existence(new_contact)
             cls.contacts_list.append(new_contact)
-            cls.__save_contacts_list()
 
     @staticmethod
     def check_contact_existence(new_contact):
@@ -167,7 +146,6 @@ class Contact:
 
     @staticmethod
     def search_contact(contact_id="", first_name="", last_name="", email="", phone_number="") -> list:
-        Contact.__load_contacts_list()
         matched_contacts = []
         pattern = r".*{}.*"
         for contact in Contact.contacts_list:
@@ -210,8 +188,6 @@ class Contact:
                 self.addresses = addresses
         except Exception:
             raise
-        else:
-            Contact.__save_contacts_list()
 
     @staticmethod
     def view_search_result(search_result_list):
@@ -229,14 +205,11 @@ class Contact:
         matched_contacts = cls.search_contact(contact_id, first_name, last_name, email, phone_number)
         for matched_contact in matched_contacts:
             cls.contacts_list.remove(matched_contact)
-        cls.__save_contacts_list()
         return matched_contacts
 
     @classmethod
     def delete_all_contacts(cls):
-        cls.__load_contacts_list()
         cls.contacts_list.clear()
-        cls.__save_contacts_list()
 
     def __str__(self):
         string = ""

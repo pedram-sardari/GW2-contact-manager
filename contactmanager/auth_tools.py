@@ -1,4 +1,4 @@
-from user import User
+from contactmanager.user import User
 import constants as cs
 from pickle_handler import PickleHandler
 

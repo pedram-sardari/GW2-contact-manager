@@ -24,7 +24,7 @@ class Messages:
     PASS_AND_CONFIRM_PASS_REQUIRED_MSG = "\nBoth password and confirm_password is required"
     Error_FORMAT_MSG = "\n\033[31m{}\033[0m"
     NO_SEARCH_RESULT_MSG = "\nThere are no search result with the given info."
-    REGISTER_DURING_LOGIN_SESSION_MSG = ("\nUse '--another_user' flag to "
+    REGISTER_DURING_LOGIN_SESSION_MSG = ("\nUse '--another-user' flag to "
                                          "register a new user (Only for Admin users).")
 
     # PickleHandler

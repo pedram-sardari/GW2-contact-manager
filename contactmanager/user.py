@@ -15,7 +15,7 @@ class User:
     users_list = []
     users_pickle_file_path = pathlib.Path(cs.Paths.USERS_FILE_PATH)
     last_login_pickle_file_path = pathlib.Path(cs.Paths.LAST_LOGIN_PICKLE_FILE_PATH)
-    last_login_data = {"user": None, "timestamp": 0.0}
+    last_login_data = {"user_id": None, "timestamp": 0.0}
 
     def __init__(self, name, username, password, confirm_password):
         self._user_id = str(uuid.uuid4())
@@ -23,14 +23,7 @@ class User:
         self._name = validators.validate_name(name)
         self._username = User.validate_username(username)
         self.__password = validators.User.validate_password(password, confirm_password)
-        contacts_path = os.path.join(cs.Paths.CONTACTS_DIRECTORY_PATH, f"{str(self.user_id)}.pickle")
-        self._contacts_pickle_file_path = pathlib.Path(contacts_path)
-        self._initialize_contacts_pickle_file()
-
-    def _initialize_contacts_pickle_file(self):
-        self.contacts_pickle_file_path.parent.mkdir(parents=True, exist_ok=True)
-        with PickleHandler(str(self.contacts_pickle_file_path), 'w') as f:
-            f.write(data=list())
+        self._contacts_list = []
 
     @staticmethod
     def convert_password_to_hash(password: str) -> str:
@@ -43,8 +36,8 @@ class User:
         return self._user_id
 
     @property
-    def contacts_pickle_file_path(self):
-        return self._contacts_pickle_file_path
+    def contacts_list(self):
+        return self._contacts_list
 
     @property
     def username(self):
@@ -64,8 +57,6 @@ class User:
 
     @staticmethod
     def validate_username(username):
-        if User.users_pickle_file_path.exists():
-            User._load_users_list()
         validators.User.validate_username(username)
         if username in [user.username for user in User.users_list]:
             raise ValueError(cs.Messages.USER_ALREADY_EXISTS_MSG.format(username))
@@ -77,92 +68,75 @@ class User:
         cond3 = self.name == other.name
         cond4 = self.username == other.username
         cond5 = self.__password == other.__password
-        cond6 = str(self.contacts_pickle_file_path) == str(other.contacts_pickle_file_path)
+        cond6 = True # TODO: CHECK CONTACTS LIST
         if cond1 and cond2 and cond3 and cond4 and cond5 and cond6:
             return True
         return False
 
-    @classmethod
-    def _load_users_list(cls):
-        if not cls.users_list:
-            with PickleHandler(file_path=str(cls.users_pickle_file_path), mode='r') as f:
-                cls.users_list = f.read()
+    @staticmethod
+    def load_users_list():
+        if not User.users_list and User.users_pickle_file_path.exists():
+            with PickleHandler(file_path=str(User.users_pickle_file_path), mode='r') as f:
+                User.users_list = f.read()
 
-    @classmethod
-    def _save_users_list(cls):
-        with PickleHandler(file_path=str(cls.users_pickle_file_path), mode='w') as f:
-            f.write(cls.users_list)
+    @staticmethod
+    def save_users_list():
+        with PickleHandler(file_path=str(User.users_pickle_file_path), mode='w') as f:
+            f.write(User.users_list)
 
-    @classmethod
-    def _save_last_login_data(cls):
-        cls.last_login_pickle_file_path.parent.mkdir(parents=True, exist_ok=True)
-        with PickleHandler(file_path=str(cls.last_login_pickle_file_path), mode='w') as f:
-            f.write(cls.last_login_data)
+    @staticmethod
+    def save_last_login_data():
+        User.last_login_pickle_file_path.parent.mkdir(parents=True, exist_ok=True)
+        with PickleHandler(file_path=str(User.last_login_pickle_file_path), mode='w') as f:
+            f.write(User.last_login_data)
 
-    @classmethod
-    def _load_last_login_data(cls):
-        if not cls.last_login_pickle_file_path.exists():
-            cls._save_last_login_data()
-        else:
-            with PickleHandler(file_path=str(cls.last_login_pickle_file_path), mode='r') as f:
-                cls.last_login_data = f.read()
+    @staticmethod
+    def load_last_login_data():
+        if User.last_login_pickle_file_path.exists():
+            with PickleHandler(file_path=str(User.last_login_pickle_file_path), mode='r') as f:
+                User.last_login_data = f.read()
 
     @classmethod
     def register(cls, new_user):  # TODO: EXCEPTION HANDLING
         cls.users_pickle_file_path.parent.mkdir(parents=True, exist_ok=True)
-        if not cls.users_pickle_file_path.exists():
-            cls._save_users_list()
-        else:
-            cls._load_users_list()
         cls.users_list.append(new_user)
-        cls._save_users_list()
         return cs.Messages.REGISTER_MSG.format(new_user.name.title())
 
-    @classmethod
-    def login(cls, username, password):
-        cls._load_users_list()
-        for user in cls.users_list:
-            if user.username == username and user.__password == cls.convert_password_to_hash(password):
-                cls.last_login_data["user"] = user
-                cls.last_login_data["timestamp"] = time.time()
-                cls._save_last_login_data()
+    @staticmethod
+    def login(username, password):
+        for user in User.users_list:
+            if user.username == username and user.__password == User.convert_password_to_hash(password):
+                User.last_login_data["user_id"] = user.user_id
+                User.last_login_data["timestamp"] = time.time()
                 return cs.Messages.LOGIN_MSG.format(user.name.title())
-        cls._clear_last_login_data()
+        User.clear_last_login_data()
         raise ValueError(cs.Messages.INVALID_USERNAME_OR_PASSWORD_MSG)
 
-    @classmethod
-    def logout(cls):
-        user = cls.get_last_logged_in_user()
-        cls._clear_last_login_data()
+    @staticmethod
+    def logout():
+        user = User.get_last_logged_in_user()
+        User.clear_last_login_data()
         return cs.Messages.LOGOUT_MSG.format(user.name.title())
 
-    @classmethod
-    def _clear_last_login_data(cls):
-        cls.last_login_data["user"] = None
-        cls.last_login_data["timestamp"] = 0.0
-        cls._save_last_login_data()
+    @staticmethod
+    def clear_last_login_data():
+        User.last_login_data["user_id"] = None
+        User.last_login_data["timestamp"] = 0.0
 
-    @classmethod
-    def is_any_logged_in_user(cls):
+    @staticmethod
+    def is_any_logged_in_user() -> None | str:
         now = time.time()
-        cls._load_last_login_data()
-        user = cls.last_login_data["user"]
-        if user is None or (cls.last_login_data["timestamp"] + cs.Constants.LOGIN_DURATION_SEC) < now:
-            cls._clear_last_login_data()
+        user_id = User.last_login_data["user_id"]
+        if user_id is None or (User.last_login_data["timestamp"] + cs.Constants.LOGIN_DURATION_SEC) < now:
+            User.clear_last_login_data()
             raise TimeoutError(cs.Messages.LOGIN_TIMEOUT_MSG)
+        return user_id
 
-    @classmethod
-    def get_last_logged_in_user(cls) -> None | typing.Self:
-        cls.is_any_logged_in_user()
-        return cls.last_login_data["user"]
-
-    @classmethod
-    def find_last_logged_in_user_in_users_list(cls) -> typing.Self:
-        cls._load_users_list()
-        last_logged_in_user = cls.get_last_logged_in_user()
-        for user in cls.users_list:
-            if user == last_logged_in_user:
-                cls.last_login_data['user'] = user
+    @staticmethod
+    def get_last_logged_in_user():
+        last_logged_in_user_id = User.is_any_logged_in_user()
+        for user in User.users_list:
+            if user.user_id == last_logged_in_user_id:
                 return user
 
     def edit_my_profile_info(self, name=None, username=None, password=None, confirm_password=None):
@@ -178,20 +152,15 @@ class User:
         except Exception:
             raise
         else:
-            User._save_last_login_data()
-            User._save_users_list()
             return cs.Messages.SUCCESSFUL_USER_INFO_UPDATE_MSG
 
     def view_my_profile_info(self):
         print(self)
 
-    def delete_corresponding_contact_pickle_file(self):
-        if self.contacts_pickle_file_path.exists():
-            self.contacts_pickle_file_path.unlink()
 
     def __str__(self):
         self_str = ""
-        ignore_attributes = ['_User__password', '_contacts_pickle_file_path']
+        ignore_attributes = ['_User__password', '_contacts_list']
         print()
         for attribute, value in self.__dict__.items():
             if attribute not in ignore_attributes:
@@ -206,7 +175,6 @@ class AdminUser(User):
     @staticmethod
     def search_user(user_id="", name="", username="") -> list:
         User.is_any_logged_in_user()
-        User._load_users_list()
         matched_users = []
         pattern = r".*{}.*"
         for user in User.users_list:
@@ -227,29 +195,22 @@ class AdminUser(User):
             return matched_users
         raise ValueError(cs.Messages.NO_SEARCH_RESULT_MSG)
 
-    @classmethod
-    def delete_user(cls, *, user_id):
-        cls._load_users_list()
-        for user in cls.users_list:
+    @staticmethod
+    def delete_user(*, user_id):
+        for user in User.users_list:
             if user.user_id == user_id:
-                cls.users_list.remove(user)
-                cls._save_users_list()
-                user.delete_corresponding_contact_pickle_file()
-                last_logged_in_user = cls.get_last_logged_in_user()
-                if user == last_logged_in_user:
-                    cls._clear_last_login_data()
+                User.users_list.remove(user)
+                last_logged_in_user_id = User.is_any_logged_in_user()
+                if user.user_id == last_logged_in_user_id:
+                    User.clear_last_login_data()
                 return cs.Messages.DELETE_USER_MSG.format(user_id)
         raise ValueError(cs.Messages.INVALID_USER_ID_MSG.format(user_id))
 
-    @classmethod
-    def delete_all_users(cls):
-        cls.is_any_logged_in_user()
-        cls._load_users_list()
-        for user in cls.users_list:
-            user.delete_corresponding_contact_pickle_file()
-        cls.users_list.clear()
-        cls._save_users_list()
-        cls._clear_last_login_data()
+    @staticmethod
+    def delete_all_users():
+        User.is_any_logged_in_user()
+        User.users_list.clear()
+        User.clear_last_login_data()
 
     @staticmethod
     def view_search_result(search_result_list: list):
@@ -264,7 +225,7 @@ class AdminUser(User):
 
     @classmethod
     def register(cls, new_user):
-        cls.is_any_logged_in_user()
+        User.is_any_logged_in_user()
         return super().register(new_user)
 
     @classmethod
@@ -280,7 +241,7 @@ class RegularUser(User):
     @classmethod
     def register(cls, new_user):
         try:
-            cls.is_any_logged_in_user()
+            User.is_any_logged_in_user()
         except TimeoutError:
             return super().register(new_user)
         else:
