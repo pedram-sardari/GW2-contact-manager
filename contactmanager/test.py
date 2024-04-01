@@ -53,17 +53,17 @@ def user():
     # User.login("maro_u", "4321")
 
     # ------------------------------------------------------( search )------------------------------------------------
-    # print(AdminUser.search_user(name="Lau", username="ed"))
+    print(AdminUser.search_user(name="Lau", username=""))
     # AdminUser.view_search_result(AdminUser.search_user(name="", username=""))
     # ------------------------------------------------------( view )------------------------------------------------
-    User.view_my_profile_info()
+    # User.view_my_profile_info()
     # AdminUser.view_all_users()
 
     # -------------------------------------------------------( edit )-------------------------------------------------
+    user = User.find_last_logged_in_user_in_users_list()
+    print("9***************", id(User.users_list))
     # User.edit_my_profile_info("Jack",) #"Peter_spider",)
-    # User.edit_my_profile_info(name="Jack",username="ped800") #"Peter_spider",)
-    # User.edit_logged_in_user("maro", "maro_u", "4321", "4321")
-    # User.edit_logged_in_user(password="1818", confirm_password="1818")
+    user.edit_my_profile_info(name="Jack", username="")  # "Peter_spider",)
 
     # ------------------------------------------------------( delete )------------------------------------------------
     # @auth_tools.who_has_access(authorized_user_types_list=[RegularUser, ])
@@ -80,21 +80,21 @@ def contact():
     # con1 = Contact("Arma", 'alibabaei', 'arma@gmail.com', [["addr1", "street1, alley1"]], [["Home", "8821318"]])
     # con1 = Contact("Arma", 'alibabaei', 'arma@gmail.com', [["addr1", "street2, alley1"]],
     #                [["Home", "09122343132"],["Home", "8821318"]])
-    con1 = Contact("pedi", 'babakhodadad', 'pedi@gmail.com', [["addr1", "street1, alley1"]], [["Home", "8821318"]])
+    # con1 = Contact("pedi", 'babakhodadad', 'pedi@gmail.com', [["addr1", "street1, alley1"]], [["Home", "8821318"]])
     # user = User.get_last_logged_in_user()
     # Contact.set_contacts_pickle_file_path(user_id="7f68b2d5-cd6b-418c-b077-d942f889a817")
     # con1.add_contact(con1)
     # ------------------------------------------------------( edit )------------------------------------------------
-    matched_contacts = Contact.search_contact(contact_id="e9227c83-2bea-4f16-92c3-f7b64fc7ee92", first_name="",
-                                              last_name="", email="", phone_number="")
-    print(matched_contacts)
-    for contact in matched_contacts:
-        print("before:", contact, sep="\n")
-        print("test:********", id(contact))
-        contact.edit_contact(first_name="mahmodd", last_name="shafie", email="pedisdi@gmail.com",
-                             phones=[["work", ""], ["mobile", ""], ["Home", ""]])
-        print("after:", contact, sep="\n")
-
+    # matched_contacts = Contact.search_contact(contact_id="de7ab944-4092-4549-854e-b6c1acc9be97", first_name="",
+    #                                           last_name="", email="", phone_number="")
+    # print(matched_contacts)
+    # for contact in matched_contacts:
+    #     print("before:", contact, sep="\n")
+    #     print("test:********", id(contact))
+    #     contact.edit_contact(first_name="mahmodd", last_name="shafie", email="pedisdi@gmail.com",
+    #                          phones=[["work", ""], ["mobile", ""], ["Home", "232"]])
+    #     print("after:", contact, sep="\n")
+    #
     # ------------------------------------------------------( search )------------------------------------------------
     # search_result= Contact.search_contact(contact_id="b004d5ba-7a5d-4860-b807-f468a5b8d57e", first_name="",
     #                                           last_name="", email="", phone_number="")
@@ -102,10 +102,10 @@ def contact():
     # print("matched_contacts:", search_result)
 
     # ------------------------------------------------------( delete )------------------------------------------------
-    # Contact.delete_contact(first_name="mahmodd", phone_number="")
+    # Contact.delete_contact(contact_id="de7ab944-4092-4549-854e-b6c1acc9be97", first_name="", phone_number="")
     # Contact.delete_all_contacts()
     # -------------------------------------------------------( view )-------------------------------------------------
-    Contact.view_all_contacts()
+    # Contact.view_all_contacts()
 
 
 if __name__ == "__main__":

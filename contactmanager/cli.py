@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 import argparse
 import constants as cs
-from user import AdminUser, RegularUser, User
+from contactmanager.user import AdminUser, RegularUser, User
 
 
 def register(**kwargs):
@@ -44,7 +44,8 @@ def logout(**kwargs):
 
 def view_my_profile_info(**kwargs):
     try:
-        User.view_my_profile_info()
+        user = User.get_last_logged_in_user()
+        user.view_my_profile_info()
     except Exception as error:
         print(cs.Messages.Error_FORMAT_MSG.format(error))
 
@@ -53,7 +54,8 @@ def edit_my_profile_info(**kwargs):
     kwargs.pop('func')
     print(kwargs)
     try:
-        msg = User.edit_my_profile_info(**kwargs)
+        user = User.find_last_logged_in_user_in_users_list()
+        msg = user.edit_my_profile_info(**kwargs)
         print(msg)
     except Exception as error:
         print(cs.Messages.Error_FORMAT_MSG.format(error))
@@ -94,10 +96,10 @@ view_my_profile_info_parser = subparsers.add_parser('view_my_profile_info', help
 view_my_profile_info_parser.set_defaults(func=view_my_profile_info)
 # ---------------------------------------------( edit my info )-----------------------------------------
 edit_my_info_parser = subparsers.add_parser('edit_my_profile_info', help='Use this command to edit your profile info.')
-edit_my_info_parser.add_argument('-n', '--name', default=None, help='Enter your name')
-edit_my_info_parser.add_argument('-u', '--username', default=None, help='Enter your username')
-edit_my_info_parser.add_argument('-p', '--password', default=None, help='Enter your password')
-edit_my_info_parser.add_argument('-c', '--confirm_password', default=None, help='Re-enter your password')
+edit_my_info_parser.add_argument('-n', '--name', default="", help='Enter your name')
+edit_my_info_parser.add_argument('-u', '--username', default="", help='Enter your username')
+edit_my_info_parser.add_argument('-p', '--password', default="", help='Enter your password')
+edit_my_info_parser.add_argument('-c', '--confirm_password', default="", help='Re-enter your password')
 edit_my_info_parser.set_defaults(func=edit_my_profile_info)
 
 # ================================================( contact management )=================================
