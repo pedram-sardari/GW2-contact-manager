@@ -108,7 +108,7 @@ class User:
                 cls.last_login_data = f.read()
 
     @classmethod
-    def register(cls, new_user):
+    def register(cls, new_user):  # TODO: EXCEPTION HANDLING
         cls.users_pickle_file_path.parent.mkdir(parents=True, exist_ok=True)
         if not cls.users_pickle_file_path.exists():
             cls._save_users_list()
@@ -165,31 +165,27 @@ class User:
                 cls.last_login_data['user'] = user
                 return user
 
-    @classmethod
-    def edit_my_profile_info(cls, name=None, username=None, password=None, confirm_password=None):
-        user = cls.find_last_logged_in_user_in_users_list()
+    def edit_my_profile_info(self, name=None, username=None, password=None, confirm_password=None):
         try:
             if password and confirm_password:
-                user.__password = validators.User.validate_password(password, confirm_password)
-            else:
+                self.__password = validators.User.validate_password(password, confirm_password)
+            elif (password and not confirm_password) or (not password and confirm_password):
                 raise ValueError(cs.Messages.PASS_AND_CONFIRM_PASS_REQUIRED_MSG)
             if name:
-                user.name = name  # validation by setter
+                self.name = name  # validation by setter
             if username:
-                user.username = username  # validation by setter
+                self.username = username  # validation by setter
         except Exception:
             raise
         else:
             if username or password:
-                cls._clear_last_login_data()
-            cls._save_last_login_data()
-            cls._save_users_list()
+                User._clear_last_login_data()
+            User._save_last_login_data()
+            User._save_users_list()
             return cs.Messages.SUCCESSFUL_USER_INFO_UPDATE_MSG
 
-    @staticmethod
-    def view_my_profile_info():
-        user = User.get_last_logged_in_user()
-        print(user)
+    def view_my_profile_info(self):
+        print(self)
 
     def delete_corresponding_contact_pickle_file(self):
         if self.contacts_pickle_file_path.exists():
@@ -209,13 +205,13 @@ class User:
 
 
 class AdminUser(User):
-    @classmethod
-    def search_user(cls, user_id="", name="", username="") -> list:
-        cls.is_any_logged_in_user()
-        cls._load_users_list()
+    @staticmethod
+    def search_user(user_id="", name="", username="") -> list:
+        AdminUser.is_any_logged_in_user()
+        AdminUser._load_users_list()
         matched_users = []
         pattern = r".*{}.*"
-        for user in cls.users_list:
+        for user in AdminUser.users_list:
             user_id_match_res = name_search_res = username_search_res = True
 
             if user_id:
@@ -273,8 +269,12 @@ class AdminUser(User):
         cls.register(new_user)
 
     @classmethod
-    def edit_another_user_profile_info(cls, name=None, username=None, password=None, confirm_password=None):
-        cls.edit_my_profile_info(name=name, username=username, password=password, confirm_password=confirm_password)
+    def edit_another_user_profile_info(cls, user_id, name=None, username=None, password=None, confirm_password=None):
+        search_result = cls.search_user(user_id)
+        if search_result:
+            user = search_result[0]
+            user.edit_my_profile_info(name=name, username=username, password=password,
+                                      confirm_password=confirm_password)
 
 
 class RegularUser(User):

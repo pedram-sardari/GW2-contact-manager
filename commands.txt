@@ -3,6 +3,7 @@ py cli.py register -a -n peyman -u pey_s -p 1234a1234a@ -c 1234a1234a@
 py cli.py login -u pey_s -p 1234a1234a@ -c 1234a1234a@
 py cli.py logout
 py cli.py view_my_profile_info
+py
 
 
 py cli.py add_contact --user_id <uuid>
