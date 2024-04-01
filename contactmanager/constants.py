@@ -11,27 +11,31 @@ class Constants:
 
 class Messages:
     # User
-    USER_ALREADY_EXISTS_MSG = "Username '{}' already exists."
-    INVALID_USERNAME_OR_PASSWORD_MSG = "Invalid username or password. If you haven't registered, please register first."
-    INVALID_USER_ID_MSG = "User with id {} not found"
-    LOGIN_TIMEOUT_MSG = "There's no logged-in user (or Login Timeout Expired), please login again later."
-    LOGIN_MSG = "\033[94mWelcome, dear '\033[96m{}\033[94m'. Please use -h for help.\033[0m"
-    LOGOUT_MSG = "\033[94mThank you for using this application '\033[93m{}\033[94m'. We hope see you soon.\033[0m"
-    REGISTER_MSG = "\033[94mThank you for registering '\033[96m{}\033[94m'!\033[0m"
-    SUCCESSFUL_USER_INFO_UPDATE_MSG = "\033[92mUser information updated successfully.\033[0m"
-    PASS_AND_CONFIRM_PASS_REQUIRED_MSG = "Both password and confirm_password is required"
-    Error_FORMAT_MSG = "\033[31m{}\033[0m"
-    NO_SEARCH_RESULT_MSG = "There are no search result with the given info."
+    USER_ALREADY_EXISTS_MSG = "\nUsername '{}' already exists."
+    INVALID_USERNAME_OR_PASSWORD_MSG = ("\nInvalid username or password."
+                                        " If you haven't registered, please register first.")
+    INVALID_USER_ID_MSG = "\nUser with id {} not found"
+    LOGIN_TIMEOUT_MSG = "\nThere's no logged-in user (or Login Timeout Expired), please login again later."
+    LOGIN_MSG = "\n\033[94mWelcome, dear '\033[96m{}\033[94m'. Please use -h for help.\033[0m"
+    LOGOUT_MSG = "\n\033[94mThank you for using this application '\033[93m{}\033[94m'. We hope see you soon.\033[0m"
+    REGISTER_MSG = "\n\033[94mThank you for registering '\033[96m{}\033[94m'!\033[0m"
+    DELETE_USER_MSG = "\n\033[94mUser with id '\033[96m{}\033[94m' deleted!\033[0m"
+    SUCCESSFUL_USER_INFO_UPDATE_MSG = "\n\033[92mUser information updated successfully.\033[0m"
+    PASS_AND_CONFIRM_PASS_REQUIRED_MSG = "\nBoth password and confirm_password is required"
+    Error_FORMAT_MSG = "\n\033[31m{}\033[0m"
+    NO_SEARCH_RESULT_MSG = "\nThere are no search result with the given info."
+    REGISTER_DURING_LOGIN_SESSION_MSG = ("\nUse '--another_user' flag to "
+                                         "register a new user (Only for Admin users).")
 
     # PickleHandler
-    INVALID_MODE_MSG = 'Invalid mode, must be one of these {}'
-    CANNOT_READ_MSG = 'Cannot read write-modded pickle file'
-    CANNOT_WRITE_MSG = 'Cannot write to read-modded pickle file'
-    FILE_NOT_FOUND_MSG = "Error 700"  # "File '{}' does not exist."
+    INVALID_MODE_MSG = '\nInvalid mode, must be one of these {}'
+    CANNOT_READ_MSG = '\nCannot read write-modded pickle file'
+    CANNOT_WRITE_MSG = '\nCannot write to read-modded pickle file'
+    FILE_NOT_FOUND_MSG = "\nError 700"  # "File '{}' does not exist."
 
     # Contact
-    CONTACT_ALREADY_EXIST_MSG = 'The same contact already exists'
-    INVALID_PHONE_NUMBER_MSG = "Phone number '{}' is not valid"
+    CONTACT_ALREADY_EXIST_MSG = '\nThe same contact already exists'
+    INVALID_PHONE_NUMBER_MSG = "\nPhone number '{}' is not valid"
 
     # auth_tools
-    NOT_AUTHORIZED_MSG = "You are not authorized to do this operation."
+    NOT_AUTHORIZED_MSG = "\nYou are not authorized to do this operation."

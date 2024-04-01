@@ -219,7 +219,6 @@ class Contact:
             for index, contact in enumerate(search_result_list, 1):
                 print(f"\033[93m{'-' * 40}( {index} ){'-' * 40}\033[0m")
                 print(contact)
-                print("view_search_result********id:", id(contact))
 
     @staticmethod
     def view_all_contacts():

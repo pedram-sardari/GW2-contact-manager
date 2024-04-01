@@ -157,7 +157,7 @@ class User:
         return cls.last_login_data["user"]
 
     @classmethod
-    def find_last_logged_in_user_in_users_list(cls):
+    def find_last_logged_in_user_in_users_list(cls) -> typing.Self:
         cls._load_users_list()
         last_logged_in_user = cls.get_last_logged_in_user()
         for user in cls.users_list:
@@ -178,8 +178,6 @@ class User:
         except Exception:
             raise
         else:
-            if username or password:
-                User._clear_last_login_data()
             User._save_last_login_data()
             User._save_users_list()
             return cs.Messages.SUCCESSFUL_USER_INFO_UPDATE_MSG
@@ -207,11 +205,11 @@ class User:
 class AdminUser(User):
     @staticmethod
     def search_user(user_id="", name="", username="") -> list:
-        AdminUser.is_any_logged_in_user()
-        AdminUser._load_users_list()
+        User.is_any_logged_in_user()
+        User._load_users_list()
         matched_users = []
         pattern = r".*{}.*"
-        for user in AdminUser.users_list:
+        for user in User.users_list:
             user_id_match_res = name_search_res = username_search_res = True
 
             if user_id:
@@ -240,7 +238,7 @@ class AdminUser(User):
                 last_logged_in_user = cls.get_last_logged_in_user()
                 if user == last_logged_in_user:
                     cls._clear_last_login_data()
-                break
+                return cs.Messages.DELETE_USER_MSG.format(user_id)
         raise ValueError(cs.Messages.INVALID_USER_ID_MSG.format(user_id))
 
     @classmethod
@@ -265,17 +263,25 @@ class AdminUser(User):
         AdminUser.view_search_result(AdminUser.search_user())
 
     @classmethod
-    def register_another_user(cls, new_user):
-        cls.register(new_user)
+    def register(cls, new_user):
+        cls.is_any_logged_in_user()
+        return super().register(new_user)
 
     @classmethod
-    def edit_another_user_profile_info(cls, user_id, name=None, username=None, password=None, confirm_password=None):
+    def edit_another_user_profile_info(cls, *, user_id, name=None, username=None, password=None, confirm_password=None):
         search_result = cls.search_user(user_id)
         if search_result:
             user = search_result[0]
-            user.edit_my_profile_info(name=name, username=username, password=password,
-                                      confirm_password=confirm_password)
+            return user.edit_my_profile_info(name=name, username=username, password=password,
+                                             confirm_password=confirm_password)
 
 
 class RegularUser(User):
-    pass
+    @classmethod
+    def register(cls, new_user):
+        try:
+            cls.is_any_logged_in_user()
+        except TimeoutError:
+            return super().register(new_user)
+        else:
+            raise TypeError(cs.Messages.REGISTER_DURING_LOGIN_SESSION_MSG)

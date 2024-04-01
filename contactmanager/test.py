@@ -34,7 +34,7 @@ def user():
     for user_info in frg.read_fake_csv():
         try:
             pass
-            # register(**user_info)
+            register(**user_info)
         except Exception as error:
             print(error)
 
@@ -44,7 +44,7 @@ def user():
     # -------------------------------------------------------( login )-------------------------------------------------
     # User.login("jack_sparrow", "1234a1234a")
     # User.login("paulsmith", "FZP@?%876")
-    User.login("dhoward", "834!!$Uxs")
+    # User.login("dhoward", "834!!$Uxs")
     # User.login("sara_ninja", "1234a1234a")
     # User.login("maro_u", "1818")
     # login_data = User.get_last_logged_in_user()
@@ -53,17 +53,17 @@ def user():
     # User.login("maro_u", "4321")
 
     # ------------------------------------------------------( search )------------------------------------------------
-    print(AdminUser.search_user(name="Lau", username=""))
+    # AdminUser.view_search_result(AdminUser.search_user(user_id="b792a475-c62a-4013-93e5-340a4e6884e2", name="Lau", username=""))
     # AdminUser.view_search_result(AdminUser.search_user(name="", username=""))
     # ------------------------------------------------------( view )------------------------------------------------
     # User.view_my_profile_info()
-    # AdminUser.view_all_users()
+    AdminUser.view_all_users()
 
     # -------------------------------------------------------( edit )-------------------------------------------------
-    user = User.find_last_logged_in_user_in_users_list()
-    print("9***************", id(User.users_list))
+    # user = User.find_last_logged_in_user_in_users_list()
+    # print("9***************", id(User.users_list))
     # User.edit_my_profile_info("Jack",) #"Peter_spider",)
-    user.edit_my_profile_info(name="Jack", username="")  # "Peter_spider",)
+    # user.edit_my_profile_info(name="Jack", username="")  # "Peter_spider",)
 
     # ------------------------------------------------------( delete )------------------------------------------------
     # @auth_tools.who_has_access(authorized_user_types_list=[RegularUser, ])
@@ -96,8 +96,7 @@ def contact():
     #     print("after:", contact, sep="\n")
     #
     # ------------------------------------------------------( search )------------------------------------------------
-    # search_result= Contact.search_contact(contact_id="b004d5ba-7a5d-4860-b807-f468a5b8d57e", first_name="",
-    #                                           last_name="", email="", phone_number="")
+    # search_result= Contact.search_contact(contact_id="b792a475-c62a-4013-93e5-340a4e6884e2")
     # search_result = Contact.search_contact(first_name='', phone_number='13')
     # print("matched_contacts:", search_result)
 
