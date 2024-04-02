@@ -10,3 +10,5 @@ py cli.py delete-user
 
 py cli.py add_contact --user_id <uuid>
 
+py cli.py view-contacts --user-id
+py cli.py add-contact -f naser -l hamidi -e Sjam@gmial.com -p work 66000000 -p mobile 09120000000

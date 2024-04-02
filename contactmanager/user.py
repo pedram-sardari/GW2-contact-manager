@@ -159,9 +159,8 @@ class User:
 
 
     def __str__(self):
-        self_str = ""
+        self_str = "\n"
         ignore_attributes = ['_User__password', '_contacts_list']
-        print()
         for attribute, value in self.__dict__.items():
             if attribute not in ignore_attributes:
                 self_str += f"\033[92m{attribute.strip('_').replace('_', ' ')}: \033[93m{value}\033[0m\n"

@@ -9,13 +9,13 @@ from contactmanager.user import User, AdminUser
 class Contact:
     contacts_list = []
 
-    def __init__(self, first_name, last_name, email, addresses: list, phone_numbers: list):
+    def __init__(self, first_name, last_name, email, addresses: list, phones: list):
         self._contact_id = uuid.uuid4()
         self._first_name = validators.validate_name(first_name)
         self._last_name = validators.validate_name(last_name)
         self._email = validators.validate_email(email)
         self._addresses = self.validate_addresses(addresses)  # addresses = [["addr1", "street1, alley1"], ...]]
-        self._phones = self.validate_phones(phone_numbers)  # phones = [["Home", "8821318"], ...]
+        self._phones = self.validate_phones(phones)  # phones = [["Home", "8821318"], ...]
 
     @property
     def contact_id(self):
@@ -87,9 +87,9 @@ class Contact:
                     break
                 elif new_label == current_label and new_address == current_address:
                     break
-                else:
-                    if new_address:
-                        self.addresses.append(new_label__address)
+            else:
+                if new_address:
+                    self.addresses.append(new_label__address)
 
     @staticmethod
     def validate_addresses(addresses_list: list):
@@ -121,12 +121,12 @@ class Contact:
             user = User.get_last_logged_in_user()
         cls.contacts_list = user.contacts_list
 
-
     @classmethod
     def add_contact(cls, new_contact):
         if isinstance(new_contact, cls):
             cls.check_contact_existence(new_contact)
             cls.contacts_list.append(new_contact)
+            return cs.Messages.CONTACT_ADDED_MSG.format(new_contact.first_name)
 
     @staticmethod
     def check_contact_existence(new_contact):
@@ -175,19 +175,16 @@ class Contact:
         raise ValueError(cs.Messages.NO_SEARCH_RESULT_MSG)
 
     def edit_contact(self, first_name=None, last_name=None, email=None, phones=None, addresses=None):
-        try:
-            if first_name:
-                self.first_name = first_name
-            if last_name:
-                self.last_name = last_name
-            if email:
-                self.email = email
-            if phones:
-                self.phones = phones
-            if addresses:
-                self.addresses = addresses
-        except Exception:
-            raise
+        if first_name:
+            self.first_name = first_name
+        if last_name:
+            self.last_name = last_name
+        if email:
+            self.email = email
+        if phones:
+            self.phones = phones
+        if addresses:
+            self.addresses = addresses
 
     @staticmethod
     def view_search_result(search_result_list):
@@ -201,7 +198,7 @@ class Contact:
         Contact.view_search_result(Contact.search_contact())
 
     @classmethod
-    def delete_contact(cls, contact_id=None, first_name=None, last_name=None, email=None, phone_number=None):
+    def delete_contact(cls, contact_id="", first_name="", last_name="", email="", phone_number=""):
         matched_contacts = cls.search_contact(contact_id, first_name, last_name, email, phone_number)
         for matched_contact in matched_contacts:
             cls.contacts_list.remove(matched_contact)
@@ -212,7 +209,7 @@ class Contact:
         cls.contacts_list.clear()
 
     def __str__(self):
-        string = ""
+        string = "\n"
         for key, value in self.__dict__.items():
             if isinstance(value, list):
                 for name, item in value:

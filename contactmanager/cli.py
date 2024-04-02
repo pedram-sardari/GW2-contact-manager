@@ -9,7 +9,6 @@ from contactmanager.user import User
 import constants as cs
 import cli_functions as cli_func
 
-
 global_parser = argparse.ArgumentParser(
     prog='ContactManager',
     description='You can register in our system and then create and manage your contacts list'
@@ -17,6 +16,7 @@ global_parser = argparse.ArgumentParser(
 # ================================================(user management)=================================
 subparsers = global_parser.add_subparsers(title='subcommands', required=True,
                                           help='User and Contact Management command')
+
 # ---------------------------------------------( register )-----------------------------------------
 register_parser = subparsers.add_parser('register', help='Use this command to register in our system.')
 # user_type
@@ -53,7 +53,7 @@ view_all_users_parser.set_defaults(func=cli_func.view_all_users)
 # ---------------------------------------------( edit my info )-----------------------------------------
 edit_my_info_parser = subparsers.add_parser('edit-user', help="Use this command to edit your (or another user's)"
                                                               " profile info.")
-edit_my_info_parser.add_argument('-i', '--user_id', help="Enter another user's ID. (Only for Admin users)")
+edit_my_info_parser.add_argument('-i', '--user-id', help="Enter another user's ID. (Only for Admin users)")
 edit_my_info_parser.add_argument('-n', '--name', default="", help='Enter your name')
 edit_my_info_parser.add_argument('-u', '--username', default="", help='Enter your username')
 edit_my_info_parser.add_argument('-p', '--password', default="", help='Enter your password')
@@ -63,15 +63,68 @@ edit_my_info_parser.set_defaults(func=cli_func.edit_user)
 # ---------------------------------------------( search user)-----------------------------------------
 search_user_parser = subparsers.add_parser('search-user', help="Search users by 'id', 'name', and 'username'"
                                                                "(Only for Admin users)")
-search_user_parser.add_argument('-i', '--user_id', default='', help='Provide a user id (UUID)')
+search_user_parser.add_argument('-i', '--user-id', default='', help='Provide a user id (UUID)')
 search_user_parser.add_argument('-n', '--name', default="", help='Enter your name')
 search_user_parser.add_argument('-u', '--username', default="", help='Enter your username')
 search_user_parser.set_defaults(func=cli_func.search_user)
+
 # ---------------------------------------------( delete user)-----------------------------------------
 delete_user_parser = subparsers.add_parser('delete-user', help="Delete a user by id (Only for Admin users)")
-delete_user_parser.add_argument('-i', '--user_id', default='', help='Provide a user id (UUID)')
+delete_user_parser.add_argument('-i', '--user-id', default='', help='Provide a user id (UUID)')
 delete_user_parser.set_defaults(func=cli_func.delete_user)
+
 # ================================================( contact management )=================================
+
+# ---------------------------------------------( view all contacts )-----------------------------------------
+view_all_contacts_parser = subparsers.add_parser('view-contacts', help='List all contacts')
+view_all_contacts_parser.add_argument('-i', '--user-id', help="Enter another user's ID. (Only for Admin users)")
+view_all_contacts_parser.set_defaults(func=cli_func.view_all_con)
+
+# ---------------------------------------------( add contact)-----------------------------------------
+add_contact_parser = subparsers.add_parser('add-contact',
+                                           help="Add a contact to your (or other user's contacts) list")
+add_contact_parser.add_argument('-i', '--user-id', help="Add a contact to a user's list with this user_id")
+add_contact_parser.add_argument('-f', '--first-name', required=True, help="Contact's first name")
+add_contact_parser.add_argument('-l', '--last-name', required=True, help="Contact's last name")
+add_contact_parser.add_argument('-e', '--email', required=True, help="Contact's email address")
+add_contact_parser.add_argument('-p', '--phones', action='append', nargs=2, default=list(),
+                                metavar=('LABEL', 'PHONE_NUMBER'),
+                                help="Contact's phone number. (each phone number needs a 'label')")
+add_contact_parser.add_argument('-a', '--addresses', action='append', default=list(), nargs=2,
+                                metavar=('LABEL', 'ADDRESS'),
+                                help="Contact's address. (each address needs a 'label')")
+add_contact_parser.set_defaults(func=cli_func.add_con)
+
+# ---------------------------------------------( search contact)-----------------------------------------
+search_contact_parser = subparsers.add_parser('search-contact',
+                                              help="Search through your (or another user's) contacts list. "
+                                                   "Provide user ID or other fields. If 'other fields' are provided, "
+                                                   "they are combined using 'and'.")
+search_contact_parser.add_argument('-i', '--user-id', default='',
+                                   help="Add a contact to a user's list with this user_id")
+search_contact_parser.add_argument('--contact-id', default='', help="Contact's ID (required)")
+search_contact_parser.add_argument('-f', '--first-name', default='', help="Contact's first name")
+search_contact_parser.add_argument('-l', '--last-name', default='', help="Contact's last name")
+search_contact_parser.add_argument('-e', '--email', default='', help="Contact's email address")
+search_contact_parser.add_argument('-p', '--phone-number', default='', help="Contact's phone numbers")
+search_contact_parser.set_defaults(func=cli_func.search_con)
+
+# ---------------------------------------------( edit contact)-----------------------------------------
+edit_contact_parser = subparsers.add_parser('edit-contact',
+                                            help="Edit a contact of your (or another user's) contacts list.")
+edit_contact_parser.add_argument('-i', '--user-id', default='',
+                                 help="Add a contact to a user's list with this user_id")
+edit_contact_parser.add_argument('--contact-id', required=True, help="Contact's ID (required)")
+edit_contact_parser.add_argument('-f', '--first-name', default='', help="Contact's first name")
+edit_contact_parser.add_argument('-l', '--last-name', default='', help="Contact's last name")
+edit_contact_parser.add_argument('-e', '--email', default='', help="Contact's email address")
+edit_contact_parser.add_argument('-p', '--phones', action='append', nargs=2, default=list(),
+                                 metavar=('LABEL', 'PHONE_NUMBER'),
+                                 help="Contact's phone number. (each phone number needs a 'label')")
+edit_contact_parser.add_argument('-a', '--addresses', action='append', default=list(), nargs=2,
+                                 metavar=('LABEL', 'ADDRESS'),
+                                 help="Contact's address. (each address needs a 'label')")
+edit_contact_parser.set_defaults(func=cli_func.edit_con)
 
 User.load_users_list()
 User.load_last_login_data()

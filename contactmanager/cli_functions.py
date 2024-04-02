@@ -1,4 +1,5 @@
 import auth_tools
+from contactmanager.contact import Contact
 from contactmanager.user import AdminUser, RegularUser, User
 
 
@@ -83,3 +84,45 @@ def delete_user(**kwargs):
     kwargs.pop('func')
     msg = AdminUser.delete_user(**kwargs)
     print(msg)
+
+
+@auth_tools.who_can_provide_params(authorized_user_types_list=[AdminUser], restricted_params_list=['user_id'])
+def _set_contacts_list(**kwargs):
+    kwargs.pop('func')
+    user_id = kwargs.pop('user_id')
+    Contact.set_contacts_list(user_id=user_id)
+    return kwargs
+
+
+def view_all_con(**kwargs):
+    _set_contacts_list(**kwargs)
+    Contact.view_all_contacts()
+
+
+def add_con(**kwargs):
+    kwargs = _set_contacts_list(**kwargs)
+    new_contact = Contact(**kwargs)
+    msg = Contact.add_contact(new_contact)
+    print(msg)
+
+
+def search_con(**kwargs):
+    kwargs = _set_contacts_list(**kwargs)
+    search_result = Contact.search_contact(**kwargs)
+    Contact.view_search_result(search_result)
+
+
+def edit_con(**kwargs):
+    kwargs = _set_contacts_list(**kwargs)
+    contact_id = kwargs.pop('contact_id')
+    search_result = Contact.search_contact(contact_id=contact_id)
+    contact = search_result[0]
+    print(f"\033[91m{'-' * 40}( Before ){'-' * 40}\033[0m")
+    print(contact)
+    contact.edit_contact(**kwargs)
+    print(f"\033[92m{'-' * 40}( After ){'-' * 40}\033[0m")
+    print(contact)
+
+
+def delete_con(**kwargs):
+    kwargs = _set_contacts_list(**kwargs)
