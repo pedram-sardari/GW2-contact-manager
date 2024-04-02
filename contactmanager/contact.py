@@ -202,11 +202,13 @@ class Contact:
         matched_contacts = cls.search_contact(contact_id, first_name, last_name, email, phone_number)
         for matched_contact in matched_contacts:
             cls.contacts_list.remove(matched_contact)
-        return matched_contacts
+        return cs.Messages.CONTACT_REMOVED_MSG.format(len(matched_contacts))
 
     @classmethod
     def delete_all_contacts(cls):
+        count = len(cls.contacts_list)
         cls.contacts_list.clear()
+        return cs.Messages.CONTACT_REMOVED_MSG.format(count)
 
     def __str__(self):
         string = "\n"

@@ -37,6 +37,7 @@ class Messages:
     CONTACT_ALREADY_EXIST_MSG = '\nThe same contact already exists'
     INVALID_PHONE_NUMBER_MSG = "\nPhone number '{}' is not valid"
     CONTACT_ADDED_MSG = "\n\033[94mContact with name '\033[93m{}\033[94m' was added.\n\033[0m"
+    CONTACT_REMOVED_MSG = "\n'\033[93m{}'\033[94m contacts were deleted\033[0m"
 
     # auth_tools
     NOT_AUTHORIZED_MSG = "\nYou are not authorized to do this operation."

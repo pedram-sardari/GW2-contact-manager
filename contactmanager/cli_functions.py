@@ -126,3 +126,11 @@ def edit_con(**kwargs):
 
 def delete_con(**kwargs):
     kwargs = _set_contacts_list(**kwargs)
+    if kwargs.pop('all'):
+        msg = Contact.delete_all_contacts()
+    else:
+        contact_id = kwargs.pop('contact_id')
+        msg = Contact.delete_contact(contact_id=contact_id)
+    print(msg)
+
+
