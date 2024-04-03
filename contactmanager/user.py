@@ -1,14 +1,16 @@
 import hashlib
-import os
+import logging
 import pathlib
 import re
 import time
 import uuid
-import typing
 
 import constants as cs
 import validators
 from pickle_handler import PickleHandler
+
+# logging
+logging.basicConfig(filename='app.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 class User:
@@ -100,6 +102,7 @@ class User:
     def register(cls, new_user):  # TODO: EXCEPTION HANDLING
         cls.users_pickle_file_path.parent.mkdir(parents=True, exist_ok=True)
         cls.users_list.append(new_user)
+        logging.info(f"User registered: {new_user.name}")
         return cs.Messages.REGISTER_MSG.format(new_user.name.title())
 
     @staticmethod
@@ -108,14 +111,17 @@ class User:
             if user.username == username and user.__password == User.convert_password_to_hash(password):
                 User.last_login_data["user_id"] = user.user_id
                 User.last_login_data["timestamp"] = time.time()
+                logging.info(f"User logged in: {username}")
                 return cs.Messages.LOGIN_MSG.format(user.name.title())
         User.clear_last_login_data()
+        logging.warning(f"Failed login attempt for username: {username}")
         raise ValueError(cs.Messages.INVALID_USERNAME_OR_PASSWORD_MSG)
 
     @staticmethod
     def logout():
         user = User.get_last_logged_in_user()
         User.clear_last_login_data()
+        logging.info(f"User logged out: {user.name}")
         return cs.Messages.LOGOUT_MSG.format(user.name.title())
 
     @staticmethod
@@ -152,6 +158,7 @@ class User:
         except Exception:
             raise
         else:
+            logging.info(f"User profile updated: {self.name}")
             return cs.Messages.SUCCESSFUL_USER_INFO_UPDATE_MSG
 
     def view_my_profile_info(self):
@@ -202,7 +209,9 @@ class AdminUser(User):
                 last_logged_in_user_id = User.is_any_logged_in_user()
                 if user.user_id == last_logged_in_user_id:
                     User.clear_last_login_data()
+                logging.info(f"User deleted successfully: User ID={user_id}")
                 return cs.Messages.DELETE_USER_MSG.format(user_id)
+        logging.warning(f"Invalid user ID: {user_id}")
         raise ValueError(cs.Messages.INVALID_USER_ID_MSG.format(user_id))
 
     @staticmethod
@@ -210,6 +219,7 @@ class AdminUser(User):
         User.is_any_logged_in_user()
         User.users_list.clear()
         User.clear_last_login_data()
+        logging.info("All users deleted successfully")
 
     @staticmethod
     def view_search_result(search_result_list: list):
@@ -217,6 +227,7 @@ class AdminUser(User):
             for i, user in enumerate(search_result_list, 1):
                 print(f"\033[94m{'-' * 40}( {i} ){'-' * 40}\033[0m")
                 print(user)
+        logging.info("Viewed search results")
 
     @staticmethod
     def view_all_users():
@@ -225,6 +236,7 @@ class AdminUser(User):
     @classmethod
     def register(cls, new_user):
         User.is_any_logged_in_user()
+        logging.info(f"Registered new user: {new_user.name}")
         return super().register(new_user)
 
     @classmethod
@@ -232,6 +244,7 @@ class AdminUser(User):
         search_result = cls.search_user(user_id)
         if search_result:
             user = search_result[0]
+            logging.info("Edited another user's profile information")
             return user.edit_my_profile_info(name=name, username=username, password=password,
                                              confirm_password=confirm_password)
 

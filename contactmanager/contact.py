@@ -1,9 +1,14 @@
 import re
 import uuid
+import logging
 
 import constants as cs
 import validators
 from contactmanager.user import User, AdminUser
+
+# logging
+logging.basicConfig(filename='contact_manager.log', level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 class Contact:
@@ -15,7 +20,8 @@ class Contact:
         self._last_name = validators.validate_name(last_name)
         self._email = validators.validate_email(email)
         self._addresses = self.validate_addresses(addresses)  # addresses = [["addr1", "street1, alley1"], ...]]
-        self._phones = self.validate_phones(phones)  # phones = [["Home", "8821318"], ...]
+        self._phones = self.validate_phones(phones)  # phones = [["Home", "8821318"], ...]]
+        logging.info(f"Initialized contact: {self._first_name} {self._last_name}")
 
     @property
     def contact_id(self):
@@ -28,6 +34,7 @@ class Contact:
     @first_name.setter
     def first_name(self, new_first_name):
         self._first_name = validators.validate_name(new_first_name)
+        logging.info(f"Updated first name: {self._first_name}")
 
     @property
     def last_name(self):
@@ -36,6 +43,7 @@ class Contact:
     @last_name.setter
     def last_name(self, new_last_name):
         self._last_name = validators.validate_name(new_last_name)
+        logging.info(f"Updated last name: {self._last_name}")
 
     @property
     def email(self):
@@ -44,6 +52,7 @@ class Contact:
     @email.setter
     def email(self, new_email):
         self._email = validators.validate_email(new_email)
+        logging.info(f"Updated email: {self._email}")
 
     @property
     def phones(self):
@@ -67,6 +76,7 @@ class Contact:
             else:
                 if new_phone:
                     self.phones.append(new_label__phone)
+        logging.info("Updated phones")
 
     @property
     def addresses(self):
@@ -90,6 +100,7 @@ class Contact:
             else:
                 if new_address:
                     self.addresses.append(new_label__address)
+        logging.info("Updated addresses")
 
     @staticmethod
     def validate_addresses(addresses_list: list):
@@ -120,18 +131,24 @@ class Contact:
         else:
             user = User.get_last_logged_in_user()
         cls.contacts_list = user.contacts_list
+        logging.info(f"Set contacts list for user: {user.username}")
 
     @classmethod
     def add_contact(cls, new_contact):
         if isinstance(new_contact, cls):
             cls.check_contact_existence(new_contact)
             cls.contacts_list.append(new_contact)
+            logging.info(f"Added new contact: {new_contact.first_name} {new_contact.last_name}")
             return cs.Messages.CONTACT_ADDED_MSG.format(new_contact.first_name)
+        else:
+            logging.error("Invalid contact instance provided.")
+            raise ValueError("Invalid contact instance provided.")
 
     @staticmethod
     def check_contact_existence(new_contact):
         for contact in Contact.contacts_list:
             if contact == new_contact:
+                logging.error("Contact already exists.")
                 raise ValueError(cs.Messages.CONTACT_ALREADY_EXIST_MSG)
 
     def __eq__(self, other):
@@ -141,8 +158,11 @@ class Contact:
         cond4 = all([(address in self.addresses) for address in other.addresses])
         cond5 = all([(phone in self.phones) for phone in other.phones])
         if cond1 and cond2 and cond3 and cond4 and cond5:
+            logging.info("Contacts are equal.")
             return True
-        return False
+        else:
+            logging.info("Contacts are not equal.")
+            return False
 
     @staticmethod
     def search_contact(contact_id="", first_name="", last_name="", email="", phone_number="") -> list:
@@ -172,7 +192,9 @@ class Contact:
 
         if matched_contacts:
             return matched_contacts
-        raise ValueError(cs.Messages.NO_SEARCH_RESULT_MSG)
+        else:
+            logging.error("No search results found.")
+            raise ValueError(cs.Messages.NO_SEARCH_RESULT_MSG)
 
     def edit_contact(self, first_name=None, last_name=None, email=None, phones=None, addresses=None):
         if first_name:
@@ -185,6 +207,7 @@ class Contact:
             self.phones = phones
         if addresses:
             self.addresses = addresses
+        logging.info("Contact edited successfully.")
 
     @staticmethod
     def view_search_result(search_result_list):
@@ -202,12 +225,14 @@ class Contact:
         matched_contacts = cls.search_contact(contact_id, first_name, last_name, email, phone_number)
         for matched_contact in matched_contacts:
             cls.contacts_list.remove(matched_contact)
+            logging.info(f"Deleted contact: {matched_contact.first_name} {matched_contact.last_name}")
         return cs.Messages.CONTACT_REMOVED_MSG.format(len(matched_contacts))
 
     @classmethod
     def delete_all_contacts(cls):
         count = len(cls.contacts_list)
         cls.contacts_list.clear()
+        logging.info(f"All contacts deleted. Count: {count}")
         return cs.Messages.CONTACT_REMOVED_MSG.format(count)
 
     def __str__(self):
