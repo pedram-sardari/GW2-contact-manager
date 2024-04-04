@@ -38,13 +38,13 @@ def user():
         except Exception as error:
             print(error)
 
-    # User._load_users_list()
-    # print(User.users_list)
+    User.load_users_list()
+    print(User.users_list)
 
     # -------------------------------------------------------( login )-------------------------------------------------
     # User.login("jack_sparrow", "1234a1234a")
     # User.login("paulsmith", "FZP@?%876")
-    User.login("dhoward", "834!!$Uxs")
+    # User.login("dhoward", "834!!$Uxs")
     # User.login("pey_1s", "1234a1234a@")
     # User.login("sara_ninja", "1234a1234a")
     # User.login("maro_u", "1818")
@@ -57,8 +57,8 @@ def user():
     # AdminUser.view_search_result(AdminUser.search_user(user_id="b792a475-c62a-4013-93e5-340a4e6884e2", name="Lau", username=""))
     # AdminUser.view_search_result(AdminUser.search_user(name="", username=""))
     # ------------------------------------------------------( view )------------------------------------------------
-    user = User.get_last_logged_in_user()
-    user.view_my_profile_info()
+    # user = User.get_last_logged_in_user()
+    # user.view_my_profile_info()
     # AdminUser.view_all_users()
 
     # -------------------------------------------------------( edit )-------------------------------------------------
@@ -82,7 +82,7 @@ def contact():
     # con1 = Contact("Arma", 'alibabaei', 'arma@gmail.com', [["addr1", "street1, alley1"]], [["Home", "8821318"]])
     # con1 = Contact("Arma", 'alibabaei', 'arma@gmail.com', [["addr1", "street2, alley1"]],
     #                [["Home", "09122343132"],["Home", "8821318"]])
-    con1 = Contact("samira", 'babakhodadad', 'pedi@gmail.com', [["addr1", "street1, alley1"]], [["Home", "8821318"]])
+    # con1 = Contact("samira", 'babakhodadad', 'pedi@gmail.com', [["addr1", "street1, alley1"]], [["Home", "8821318"]])
     # user = User.get_last_logged_in_user()
     # Contact.set_contacts_list(user_id="b67fb395-2917-49d4-b1ee-ee2e12021c08")
     # con1.add_contact(con1)
@@ -106,13 +106,13 @@ def contact():
     # Contact.delete_contact(contact_id="eb2d8ee4-3216-472f-b10c-e85b9e566c0c", first_name="", phone_number="")
     # Contact.delete_all_contacts()
     # -------------------------------------------------------( view )-------------------------------------------------
-    Contact.view_all_contacts()
+    # Contact.view_all_contacts()
 
 
 if __name__ == "__main__":
     User.load_users_list()
     User.load_last_login_data()
-    Contact.set_contacts_list()
+    # Contact.set_contacts_list()
     user()
     contact()
     User.save_last_login_data()

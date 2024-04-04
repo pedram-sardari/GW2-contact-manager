@@ -95,6 +95,7 @@ add_contact_parser.add_argument('-p', '--phones', action='append', nargs=2, defa
 add_contact_parser.add_argument('-a', '--addresses', action='append', default=list(), nargs=2,
                                 metavar=('LABEL', 'ADDRESS'),
                                 help="Contact's address. (each address needs a 'label')")
+add_contact_parser.add_argument('-c', '--categories', default=list(), nargs='+')
 add_contact_parser.set_defaults(func=cli_func.add_con)
 
 # ---------------------------------------------( search contact)-----------------------------------------
@@ -109,6 +110,7 @@ search_contact_parser.add_argument('-f', '--first-name', default='', help="Conta
 search_contact_parser.add_argument('-l', '--last-name', default='', help="Contact's last name")
 search_contact_parser.add_argument('-e', '--email', default='', help="Contact's email address")
 search_contact_parser.add_argument('-p', '--phone-number', default='', help="Contact's phone numbers")
+search_contact_parser.add_argument('-c', '--category', default='', help="Contact's categories")
 search_contact_parser.set_defaults(func=cli_func.search_con)
 
 # ---------------------------------------------( edit contact)-----------------------------------------
@@ -125,8 +127,12 @@ edit_contact_parser.add_argument('-p', '--phones', action='append', nargs=2, def
                                  help="Contact's phone number. (each phone number needs a 'label')")
 edit_contact_parser.add_argument('-a', '--addresses', action='append', default=list(), nargs=2,
                                  metavar=('LABEL', 'ADDRESS'),
-                                 help="Contact's address. (each address needs a 'label')")
+                                 help="Contact's address. (each address needs a 'label')"),
+edit_contact_parser.add_argument('-c', '--categories', action='append', nargs=2, default=list(),
+                                 metavar=('CURRENT CATEGORY', 'NEW CATEGORY'))  # categories=[[current,new],[]]
 edit_contact_parser.set_defaults(func=cli_func.edit_con)
+# ______________________________________________(edit contact categories_Arma)____________________________
+
 
 # ---------------------------------------------( delete contact )-----------------------------------------
 delete_contact_parser = subparsers.add_parser('delete-contact',
