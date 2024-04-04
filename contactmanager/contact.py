@@ -5,6 +5,7 @@ import logging
 import constants as cs
 import validators
 from contactmanager.user import User, AdminUser
+from categories import Category
 
 # logging
 logging.basicConfig(filename='contact_manager.log', level=logging.INFO,
@@ -14,13 +15,14 @@ logging.basicConfig(filename='contact_manager.log', level=logging.INFO,
 class Contact:
     contacts_list = []
 
-    def __init__(self, first_name, last_name, email, addresses: list, phones: list):
+    def __init__(self, first_name, last_name, email, addresses: list, phones: list, categories: set):
         self._contact_id = uuid.uuid4()
         self._first_name = validators.validate_name(first_name)
         self._last_name = validators.validate_name(last_name)
         self._email = validators.validate_email(email)
         self._addresses = self.validate_addresses(addresses)  # addresses = [["addr1", "street1, alley1"], ...]]
-        self._phones = self.validate_phones(phones)  # phones = [["Home", "8821318"], ...]]
+        self._phones = self.validate_phones(phones)  # phones = [["Home", "8821318"], ...]
+        self.categories = Category(categories)
         logging.info(f"Initialized contact: {self._first_name} {self._last_name}")
 
     @property
@@ -165,11 +167,11 @@ class Contact:
             return False
 
     @staticmethod
-    def search_contact(contact_id="", first_name="", last_name="", email="", phone_number="") -> list:
+    def search_contact(contact_id="", first_name="", last_name="", email="", phone_number="", category="") -> list:
         matched_contacts = []
         pattern = r".*{}.*"
         for contact in Contact.contacts_list:
-            cond1 = cond2 = cond3 = cond4 = cond5 = True
+            cond1 = cond2 = cond3 = cond4 = cond5 = con6 = True
             if contact_id:
                 contact_id = validators.validate_uuid(contact_id)
                 cond1 = True if re.search(pattern.format(contact_id), str(contact.contact_id)) else False
@@ -186,8 +188,9 @@ class Contact:
                             break
                     else:
                         cond5 = False
-
-            if cond1 and cond2 and cond3 and cond4 and cond5:
+                if category:
+                    con6 = contact.categories.search_category(category)
+            if cond1 and cond2 and cond3 and cond4 and cond5 and con6:
                 matched_contacts.append(contact)
 
         if matched_contacts:
@@ -196,7 +199,7 @@ class Contact:
             logging.error("No search results found.")
             raise ValueError(cs.Messages.NO_SEARCH_RESULT_MSG)
 
-    def edit_contact(self, first_name=None, last_name=None, email=None, phones=None, addresses=None):
+    def edit_contact(self, first_name=None, last_name=None, email=None, phones=None, addresses=None, categories=None):
         if first_name:
             self.first_name = first_name
         if last_name:
@@ -207,6 +210,8 @@ class Contact:
             self.phones = phones
         if addresses:
             self.addresses = addresses
+        if categories:
+            self.categories.edit_category(categories)
         logging.info("Contact edited successfully.")
 
     @staticmethod
@@ -221,8 +226,8 @@ class Contact:
         Contact.view_search_result(Contact.search_contact())
 
     @classmethod
-    def delete_contact(cls, contact_id="", first_name="", last_name="", email="", phone_number=""):
-        matched_contacts = cls.search_contact(contact_id, first_name, last_name, email, phone_number)
+    def delete_contact(cls, contact_id="", first_name="", last_name="", email="", phone_number="", categories=""):
+        matched_contacts = cls.search_contact(contact_id, first_name, last_name, email, phone_number, categories)
         for matched_contact in matched_contacts:
             cls.contacts_list.remove(matched_contact)
             logging.info(f"Deleted contact: {matched_contact.first_name} {matched_contact.last_name}")

@@ -48,6 +48,16 @@ def validate_label(label: str):  # TODO: Implementation
     return label
 
 
+def validate_categories(categories):
+    if isinstance(categories, set):
+        for category in categories:
+            if not isinstance(category, str):
+                raise ValueError("Categories must be strings.")  # TODO
+    else:
+        raise ValueError("Categories must be provided as set of strings")  # TODO
+    return categories
+
+
 def validate_index(lst: list, index: int):
     if isinstance(lst, list) and isinstance(index, int) and len(lst) > index > 0:
         return True

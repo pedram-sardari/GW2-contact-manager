@@ -101,6 +101,7 @@ def view_all_con(**kwargs):
 
 def add_con(**kwargs):
     kwargs = _set_contacts_list(**kwargs)
+    kwargs["categories"] = set(kwargs["categories"])
     new_contact = Contact(**kwargs)
     msg = Contact.add_contact(new_contact)
     print(msg)
@@ -117,6 +118,8 @@ def edit_con(**kwargs):
     contact_id = kwargs.pop('contact_id')
     search_result = Contact.search_contact(contact_id=contact_id)
     contact = search_result[0]
+    kwargs["categories"] = dict(kwargs["categories"])
+    print(kwargs)
     print(f"\033[91m{'-' * 40}( Before ){'-' * 40}\033[0m")
     print(contact)
     contact.edit_contact(**kwargs)
@@ -132,5 +135,3 @@ def delete_con(**kwargs):
         contact_id = kwargs.pop('contact_id')
         msg = Contact.delete_contact(contact_id=contact_id)
     print(msg)
-
-
