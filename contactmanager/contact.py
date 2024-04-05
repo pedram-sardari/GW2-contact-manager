@@ -51,22 +51,7 @@ class Contact:
 
     @phones.setter
     def phones(self, new_phones):
-        for new_label__phone in Contact.validate_phones(new_phones):
-            new_label, new_phone = new_label__phone
-            for i, current_label__phone in enumerate(self.phones):
-                current_label, current_phone = current_label__phone
-                if not new_phone:
-                    if new_label == current_label and new_phone == "":
-                        self.phones.pop(i)
-                        break
-                elif new_label == current_label and new_phone != current_phone:
-                    self.phones[i] = new_label__phone
-                    break
-                elif new_label == current_label and new_phone == current_phone:
-                    break
-            else:
-                if new_phone:
-                    self.phones.append(new_label__phone)
+        Contact.set_attribute_with_multiple_value(contact=self, new_phones=new_phones)
 
     @property
     def addresses(self):
@@ -74,22 +59,7 @@ class Contact:
 
     @addresses.setter
     def addresses(self, new_addresses):
-        for new_label__address in Contact.validate_addresses(new_addresses):
-            new_label, new_address = new_label__address
-            for i, current_label__address in enumerate(self.addresses):
-                current_label, current_address = current_label__address
-                if not new_address:
-                    if new_label == current_label and new_address == "":
-                        self.addresses.pop(i)
-                        break
-                elif new_label == current_label and new_address != current_address:
-                    self.addresses[i] = new_label__address
-                    break
-                elif new_label == current_label and new_address == current_address:
-                    break
-            else:
-                if new_address:
-                    self.addresses.append(new_label__address)
+        Contact.set_attribute_with_multiple_value(contact=self, new_addresses=new_addresses)
 
     @staticmethod
     def validate_addresses(addresses_list: list):
@@ -111,6 +81,34 @@ class Contact:
                 raise ValueError(cs.Messages.INVALID_PHONE_NUMBER_MSG.format(phone))
             validators.validate_name(label)
         return phones_list
+
+    @staticmethod
+    def set_attribute_with_multiple_value(contact, new_addresses=None, new_phones=None):
+        if new_addresses:
+            new_label__items = Contact.validate_addresses(new_addresses)
+            current_label__items = contact.addresses
+        elif new_phones:
+            new_label__items = Contact.validate_phones(new_phones)
+            current_label__items = contact.phones
+        else:
+            raise ValueError(cs.Messages)
+
+        for new_label__item in new_label__items:
+            new_label, new_item = new_label__item
+            for i, current_label__item in enumerate(current_label__items):
+                current_label, current_item = current_label__item
+                if not new_item:
+                    if new_label == current_label:
+                        current_label__items.pop(i)
+                        break
+                elif new_label == current_label and new_item != current_item:
+                    current_label__items[i] = new_label__item
+                    break
+                elif new_label == current_label and new_item == current_item:
+                    break
+            else:
+                if new_item:
+                    current_label__items.append(new_label__item)
 
     @classmethod
     def set_contacts_list(cls, *, user_id=None):

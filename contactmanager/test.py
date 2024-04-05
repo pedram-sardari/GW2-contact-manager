@@ -38,8 +38,8 @@ def user():
         except Exception as error:
             print(error)
 
-    # User._load_users_list()
-    # print(User.users_list)
+    User.load_users_list()
+    print(User.users_list)
 
     # -------------------------------------------------------( login )-------------------------------------------------
     # User.login("jack_sparrow", "1234a1234a")
@@ -78,6 +78,7 @@ def user():
 
 def contact():
     print("================================================( Contact )============================================")
+    # Contact.set_contacts_list()
     # -------------------------------------------------------( add )---------------------------------------------------
     # con1 = Contact("Arma", 'alibabaei', 'arma@gmail.com', [["addr1", "street1, alley1"]], [["Home", "8821318"]])
     # con1 = Contact("Arma", 'alibabaei', 'arma@gmail.com', [["addr1", "street2, alley1"]],
@@ -106,13 +107,13 @@ def contact():
     # Contact.delete_contact(contact_id="eb2d8ee4-3216-472f-b10c-e85b9e566c0c", first_name="", phone_number="")
     # Contact.delete_all_contacts()
     # -------------------------------------------------------( view )-------------------------------------------------
-    Contact.view_all_contacts()
+    # Contact.view_all_contacts()
 
 
 if __name__ == "__main__":
     User.load_users_list()
     User.load_last_login_data()
-    Contact.set_contacts_list()
+    # Contact.set_contacts_list()
     user()
     contact()
     User.save_last_login_data()
