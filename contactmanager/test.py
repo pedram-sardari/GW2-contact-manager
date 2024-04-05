@@ -78,6 +78,7 @@ def user():
 
 def contact():
     print("================================================( Contact )============================================")
+    # Contact.set_contacts_list()
     # -------------------------------------------------------( add )---------------------------------------------------
     # con1 = Contact("Arma", 'alibabaei', 'arma@gmail.com', [["addr1", "street1, alley1"]], [["Home", "8821318"]])
     # con1 = Contact("Arma", 'alibabaei', 'arma@gmail.com', [["addr1", "street2, alley1"]],
