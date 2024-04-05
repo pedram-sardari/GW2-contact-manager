@@ -1,8 +1,9 @@
+import base64
 import pickle
 import pathlib
 
 import constants as cs
-
+import security
 
 class PickleHandler:
     __valid_modes = ['r', 'w']
@@ -21,7 +22,9 @@ class PickleHandler:
         if self.__mode == 'r':
             if self.__file_path.exists():
                 self.__file_obj = self.__file_path.open('rb')
-                return pickle.load(self.__file_obj)
+                encrypted_data = self.__file_obj.read()
+                pickled_date = security.decrypt(encrypted_content=encrypted_data)
+                return pickle.loads(pickled_date)
             else:
                 raise ValueError(cs.Messages.FILE_NOT_FOUND_MSG.format(self.__file_path.name))
         else:
@@ -30,7 +33,9 @@ class PickleHandler:
     def write(self, data):
         if self.__mode == 'w':
             self.__file_obj = self.__file_path.open('wb')
-            pickle.dump(data, self.__file_obj)
+            pickled_data = pickle.dumps(data)
+            encrypted_data = security.encrypt(content=pickled_data)
+            self.__file_obj.write(encrypted_data)
         else:
             raise TypeError(cs.Messages.CANNOT_WRITE_MSG)
 

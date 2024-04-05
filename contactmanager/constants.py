@@ -3,6 +3,7 @@ class Paths:
     CONTACTS_DIRECTORY_PATH = './db/contacts'
     USERS_FILE_PATH = './db/users.pickle'
     LAST_LOGIN_PICKLE_FILE_PATH = './db/last_login_data.pickle'
+    SECRET_KEY_FILE_PATH = './secret.key'
 
 
 class Constants:

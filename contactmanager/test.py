@@ -116,5 +116,5 @@ if __name__ == "__main__":
     # Contact.set_contacts_list()
     user()
     contact()
-    User.save_last_login_data()
-    User.save_users_list()
+    # User.save_last_login_data()
+    # User.save_users_list()
