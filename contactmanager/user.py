@@ -4,10 +4,12 @@ import pathlib
 import re
 import time
 import uuid
+import getpass
 
 import constants as cs
 import validators
 from pickle_handler import PickleHandler
+import security
 
 # logging
 logging.basicConfig(filename='app.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -64,13 +66,31 @@ class User:
             raise ValueError(cs.Messages.USER_ALREADY_EXISTS_MSG.format(username))
         return username
 
+    @staticmethod
+    def get_password():
+        while True:
+            password = getpass.getpass('Password: ')
+            confirm_password = getpass.getpass('Confirm Password: ')
+            validators.User.validate_password(password, confirm_password)
+            print(security.score_password(password))
+            choice = input('Do you want to change the password? (y/n): ').lower()
+            if 'y' == choice:
+                continue
+            elif 'n' == choice:
+                return password, confirm_password
+            else:
+                print('invalid choice')
+
+
+
+
     def __eq__(self, other):
         cond1 = self.user_id == other.user_id
         cond2 = self.user_type == other.user_type
         cond3 = self.name == other.name
         cond4 = self.username == other.username
         cond5 = self.__password == other.__password
-        cond6 = True # TODO: CHECK CONTACTS LIST
+        cond6 = True  # TODO: CHECK CONTACTS LIST
         if cond1 and cond2 and cond3 and cond4 and cond5 and cond6:
             return True
         return False
@@ -163,7 +183,6 @@ class User:
 
     def view_my_profile_info(self):
         print(self)
-
 
     def __str__(self):
         self_str = "\n"
@@ -258,3 +277,7 @@ class RegularUser(User):
             return super().register(new_user)
         else:
             raise TypeError(cs.Messages.REGISTER_DURING_LOGIN_SESSION_MSG)
+
+
+if __name__ == '__main__':
+    print(User.get_password())

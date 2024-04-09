@@ -143,15 +143,3 @@ delete_contact_mutually_exclusive.add_argument('-a', '--all', action='store_true
 delete_contact_mutually_exclusive.set_defaults(func=cli_func.delete_con)
 
 # ================================================( parsing args )=================================
-
-User.load_users_list()
-User.load_last_login_data()
-# call func
-args = global_parser.parse_args()
-try:
-    print(args)
-    args.func(**args.__dict__)
-except Exception as error:
-    print(cs.Messages.Error_FORMAT_MSG.format(error))
-User.save_users_list()
-User.save_last_login_data()

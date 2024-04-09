@@ -4,6 +4,7 @@ class Paths:
     USERS_FILE_PATH = './db/users.pickle'
     LAST_LOGIN_PICKLE_FILE_PATH = './db/last_login_data.pickle'
     SECRET_KEY_FILE_PATH = './secret.key'
+    COMMON_PASSWORD_FILE_PATH = './10-million-password-list-top-100.txt'
 
 
 class Constants:
@@ -34,11 +35,19 @@ class Messages:
     CANNOT_WRITE_MSG = '\nCannot write to read-modded pickle file'
     FILE_NOT_FOUND_MSG = "\nError 700"  # "File '{}' does not exist."
 
-    # Contact
+    # contact.py/Contact
     CONTACT_ALREADY_EXIST_MSG = '\nThe same contact already exists'
     INVALID_PHONE_NUMBER_MSG = "\nPhone number '{}' is not valid"
     CONTACT_ADDED_MSG = "\n\033[94mContact with name '\033[93m{}\033[94m' was added.\n\033[0m"
     CONTACT_REMOVED_MSG = "\n'\033[93m{}'\033[94m contacts were deleted\033[0m"
 
-    # auth_tools
+    # auth_tools.py
     NOT_AUTHORIZED_MSG = "\nYou are not authorized to do this operation."
+
+    # security.py
+    COMMON_PASSWORD_MSG = '\nThe password is in the list of common passwords. -> (Score 0/7)'
+    WEAK_PASSWORD_MSG = "\nWeak -> (Score {}/7)"
+    OK_PASSWORD_MSG = "\nOK -> (Score {}/7)"
+    PRETTY_GOOD_PASSWORD_MSG = "\nPretty good -> (Score {}/7)"
+    STRONG_PASSWORD_MSG = "\nStrong -> (Score {}/7)"
+

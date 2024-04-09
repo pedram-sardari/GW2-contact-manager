@@ -34,7 +34,7 @@ def user():
     for user_info in frg.read_fake_csv():
         try:
             pass
-            # register(**user_info)
+            register(**user_info)
         except Exception as error:
             print(error)
 
@@ -116,5 +116,5 @@ if __name__ == "__main__":
     # Contact.set_contacts_list()
     user()
     contact()
-    # User.save_last_login_data()
-    # User.save_users_list()
+    User.save_last_login_data()
+    User.save_users_list()
